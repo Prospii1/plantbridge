@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "engine_min": "0.1.0",
+  "rules": [
+    {
+      "id": "rec.terpene.linalool.relaxation",
+      "category": "terpene",
+      "subject": "linalool",
+      "when": {
+        "all": [
+          { "answer": "goal.primary", "in": ["relaxation", "sleep"] }
+        ]
+      },
+      "weight": 0.7,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.linalool.relaxation",
+      "deprecated": false
+    },
+    {
+      "id": "rec.cannabinoid.cbd.sleep",
+      "category": "cannabinoid",
+      "subject": "cbd",
+      "when": {
+        "all": [
+          { "answer": "goal.primary", "in": ["sleep"] },
+          { "answer": "severity.sleep", "gte": 3 }
+        ]
+      },
+      "weight": 0.75,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbd.sleep",
+      "deprecated": false
+    },
+    {
+      "id": "rec.format.tincture.general",
+      "category": "format",
+      "subject": "tincture",
+      "when": {
+        "all": [
+          { "answer": "experience.level", "in": ["beginner", "moderate"] }
+        ]
+      },
+      "weight": 0.6,
+      "education_ref": "edu.format.tincture",
+      "copy_ref": "copy.rec.format.tincture",
+      "deprecated": false
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "questions": [
+    {
+      "id": "goal.primary",
+      "type": "single_choice",
+      "text": "What is your primary wellness goal?",
+      "subtext": "Choose the one that feels most relevant to you right now.",
+      "required": true,
+      "options": [
+        { "value": "sleep", "label": "Better sleep" },
+        { "value": "relaxation", "label": "Relaxation & stress relief" },
+        { "value": "focus", "label": "Focus & clarity" },
+        { "value": "discomfort", "label": "Physical discomfort relief" },
+        { "value": "mood", "label": "Mood support" },
+        { "value": "general_wellness", "label": "General wellness" }
+      ]
+    },
+    {
+      "id": "severity.sleep",
+      "type": "scale",
+      "text": "How would you rate your current sleep quality?",
+      "subtext": "1 = Sleeping well, 5 = Significant difficulty sleeping",
+      "required": false,
+      "min": 1,
+      "max": 5,
+      "minLabel": "Sleeping well",
+      "maxLabel": "Significant difficulty"
+    },
+    {
+      "id": "experience.level",
+      "type": "single_choice",
+      "text": "How would you describe your experience with cannabis products?",
+      "required": true,
+      "options": [
+        { "value": "beginner", "label": "New — little to no prior experience" },
+        { "value": "moderate", "label": "Some experience — used occasionally" },
+        { "value": "experienced", "label": "Regular use — comfortable with different products" }
+      ]
+    },
+    {
+      "id": "format.preference",
+      "type": "multi_choice",
+      "text": "Are there any consumption formats you prefer or want to avoid?",
+      "subtext": "Select all that apply. You can skip this if you have no preference.",
+      "required": false,
+      "options": [
+        { "value": "tincture", "label": "Tinctures / oils (sublingual)" },
+        { "value": "capsule", "label": "Capsules / softgels" },
+        { "value": "edible", "label": "Edibles (gummies, chocolates)" },
+        { "value": "vaporizer", "label": "Vaporizer" },
+        { "value": "topical", "label": "Topicals (creams, balms)" },
+        { "value": "no_preference", "label": "No preference" }
+      ]
+    },
+    {
+      "id": "medication.current",
+      "type": "boolean",
+      "text": "Are you currently taking any prescription medications?",
+      "subtext": "This helps us make sure to include relevant guidance in your care plan.",
+      "required": true
+    }
+  ]
+}

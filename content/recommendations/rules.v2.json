@@ -1,0 +1,83 @@
+{
+  "version": "2.0.0",
+  "engine_min": "0.2.0",
+  "rules": [
+    {
+      "id": "rec.terpene.linalool.relaxation",
+      "category": "terpene",
+      "subject": "linalool",
+      "when": {
+        "all": [
+          { "answer": "goal.primary", "in": ["relaxation", "sleep"] }
+        ]
+      },
+      "weight": 0.7,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.linalool.relaxation",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.cbd.sleep",
+      "category": "cannabinoid",
+      "subject": "cbd",
+      "when": {
+        "all": [
+          { "answer": "goal.primary", "in": ["sleep"] },
+          { "answer": "severity.sleep", "gte": 3 }
+        ]
+      },
+      "weight": 0.75,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbd.sleep",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.format.tincture.general",
+      "category": "format",
+      "subject": "tincture",
+      "when": {
+        "all": [
+          { "answer": "experience.level", "in": ["beginner", "moderate"] }
+        ]
+      },
+      "weight": 0.6,
+      "education_ref": "edu.format.tincture",
+      "copy_ref": "copy.rec.format.tincture",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.terpene.myrcene.focus",
+      "category": "terpene",
+      "subject": "myrcene",
+      "when": {
+        "all": [
+          { "answer": "goal.primary", "in": ["focus", "energy"] }
+        ]
+      },
+      "weight": 0.65,
+      "education_ref": "edu.terpene.myrcene",
+      "copy_ref": "copy.rec.myrcene.focus",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.thc.low.stress",
+      "category": "cannabinoid",
+      "subject": "thc-low",
+      "when": {
+        "all": [
+          { "answer": "goal.primary", "in": ["stress", "relaxation"] },
+          { "answer": "experience.level", "in": ["moderate", "experienced"] }
+        ]
+      },
+      "weight": 0.6,
+      "education_ref": "edu.cannabinoid.thc",
+      "copy_ref": "copy.rec.thc.low.stress",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    }
+  ]
+}

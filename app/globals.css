@@ -1,0 +1,117 @@
+@import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Scoped styles for markdown-rendered education articles */
+@layer components {
+  .article-body h1 { @apply text-2xl font-bold text-foreground mb-4 mt-8 first:mt-0; }
+  .article-body h2 { @apply text-lg font-semibold text-foreground mb-3 mt-6; }
+  .article-body h3 { @apply text-base font-semibold text-foreground mb-2 mt-4; }
+  .article-body p  { @apply text-sm text-foreground leading-relaxed mb-4; color: color-mix(in srgb, var(--foreground) 90%, transparent); }
+  .article-body ul { @apply list-disc pl-5 mb-4 space-y-1 text-sm text-foreground; color: color-mix(in srgb, var(--foreground) 90%, transparent); }
+  .article-body ol { @apply list-decimal pl-5 mb-4 space-y-1 text-sm text-foreground; color: color-mix(in srgb, var(--foreground) 90%, transparent); }
+  .article-body li { @apply leading-relaxed; }
+  .article-body strong { @apply font-semibold text-foreground; }
+  .article-body a    { @apply text-primary underline hover:opacity-80; }
+  .article-body blockquote {
+    @apply border-l-2 pl-4 italic text-muted-foreground text-sm my-4;
+    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  }
+  .article-body table { @apply w-full text-sm border-collapse mb-4; }
+  .article-body th { @apply text-left font-medium text-muted-foreground border-b border-border pb-2 pr-4; }
+  .article-body td { @apply py-2 pr-4 text-foreground border-b; color: color-mix(in srgb, var(--foreground) 90%, transparent); border-color: color-mix(in srgb, var(--border) 50%, transparent); }
+  .article-body hr { @apply border-border my-6; }
+  .article-body code { @apply text-xs bg-muted px-1 py-0.5 rounded font-mono; }
+}
+
+@layer base {
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+  }
+  /* Brand primary: deep forest green hsl(148,40%,16%) ≈ oklch(0.27 0.065 148) */
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.14 0.03 148);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.14 0.03 148);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.14 0.03 148);
+    --primary: oklch(0.27 0.065 148);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.95 0.02 148);
+    --secondary-foreground: oklch(0.27 0.065 148);
+    --muted: oklch(0.96 0.01 148);
+    --muted-foreground: oklch(0.55 0.025 148);
+    --accent: oklch(0.40 0.10 148);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.91 0.015 148);
+    --input: oklch(0.91 0.015 148);
+    --ring: oklch(0.27 0.065 148);
+    --chart-1: oklch(0.60 0.12 148);
+    --chart-2: oklch(0.48 0.11 148);
+    --chart-3: oklch(0.38 0.09 148);
+    --chart-4: oklch(0.72 0.10 148);
+    --chart-5: oklch(0.83 0.07 148);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.97 0.015 148);
+    --sidebar-foreground: oklch(0.14 0.03 148);
+    --sidebar-primary: oklch(0.27 0.065 148);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.93 0.025 148);
+    --sidebar-accent-foreground: oklch(0.27 0.065 148);
+    --sidebar-border: oklch(0.91 0.015 148);
+    --sidebar-ring: oklch(0.27 0.065 148);
+  }
+  .dark {
+    --background: oklch(0.14 0.025 148);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.19 0.03 148);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.19 0.03 148);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.83 0.07 148);
+    --primary-foreground: oklch(0.19 0.03 148);
+    --secondary: oklch(0.25 0.04 148);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.24 0.035 148);
+    --muted-foreground: oklch(0.65 0.04 148);
+    --accent: oklch(0.40 0.10 148);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.60 0.08 148);
+    --chart-1: oklch(0.72 0.10 148);
+    --chart-2: oklch(0.60 0.12 148);
+    --chart-3: oklch(0.48 0.11 148);
+    --chart-4: oklch(0.83 0.07 148);
+    --chart-5: oklch(0.38 0.09 148);
+    --sidebar: oklch(0.19 0.03 148);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.83 0.07 148);
+    --sidebar-primary-foreground: oklch(0.19 0.03 148);
+    --sidebar-accent: oklch(0.25 0.04 148);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.60 0.08 148);
+  }
+  * {
+    @apply border-border;
+    outline-color: var(--ring);
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

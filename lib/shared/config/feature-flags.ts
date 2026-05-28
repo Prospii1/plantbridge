@@ -1,0 +1,4 @@
+export const FEATURE_FLAGS = {
+  DISPENSARY_LOCATOR: process.env.NEXT_PUBLIC_FEATURE_DISPENSARY_LOCATOR === 'true',
+  DUTCHIE_SYNC_ENABLED: process.env.DUTCHIE_SYNC_ENABLED === 'true',
+} as const;
