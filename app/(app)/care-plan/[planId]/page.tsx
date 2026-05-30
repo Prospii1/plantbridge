@@ -25,6 +25,13 @@ export default async function CarePlanPage({ params }: Props) {
     .eq('care_plan_id', planId)
     .order('display_order');
 
+  const CATEGORY_ACCENT: Record<string, { border: string; label: string }> = {
+    terpene:     { border: 'border-l-emerald-500', label: 'text-emerald-600 dark:text-emerald-400' },
+    cannabinoid: { border: 'border-l-violet-500',  label: 'text-violet-600 dark:text-violet-400' },
+    format:      { border: 'border-l-blue-500',    label: 'text-blue-600 dark:text-blue-400' },
+    timing:      { border: 'border-l-amber-500',   label: 'text-amber-600 dark:text-amber-400' },
+  };
+
   return (
     <div className="mx-auto max-w-2xl space-y-8 py-8">
       <div className="space-y-1">
@@ -40,29 +47,32 @@ export default async function CarePlanPage({ params }: Props) {
         </div>
       ) : (
         <div className="space-y-4">
-          {items.map((item) => (
-            <div key={item.id} className="rounded-lg border border-border bg-card p-5 space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    {item.category}
+          {items.map((item) => {
+            const accent = CATEGORY_ACCENT[item.category] ?? { border: 'border-l-border', label: 'text-muted-foreground' };
+            return (
+              <div key={item.id} className={`rounded-lg border border-border border-l-4 ${accent.border} bg-card p-5 space-y-2`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className={`text-xs font-medium uppercase tracking-wide ${accent.label}`}>
+                      {item.category}
+                    </span>
+                    <h2 className="text-lg font-medium capitalize text-foreground">{item.subject}</h2>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground">
+                    {Math.round(item.confidence * 100)}% match
                   </span>
-                  <h2 className="text-lg font-medium capitalize text-foreground">{item.subject}</h2>
                 </div>
-                <span className="shrink-0 rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground">
-                  {Math.round(item.confidence * 100)}% match
-                </span>
+                {item.education_ref && (
+                  <Link
+                    href={`/education/${item.education_ref}`}
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    Learn more →
+                  </Link>
+                )}
               </div>
-              {item.education_ref && (
-                <Link
-                  href={`/education/${item.education_ref}`}
-                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                >
-                  Learn more →
-                </Link>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

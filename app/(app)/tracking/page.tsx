@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createSupabaseServerClient } from '@/lib/server/supabase-server';
 import { OutcomeLogForm } from '@/components/tracking/outcome-log-form';
 import { DISCLAIMERS } from '@/lib/shared/copy/disclaimers';
@@ -37,9 +38,15 @@ export default async function TrackingPage() {
       <h1 className="text-2xl font-semibold text-foreground">Track Your Outcomes</h1>
 
       {!items || items.length === 0 ? (
-        <p className="text-muted-foreground">
-          Complete your intake first to get care plan items to track.
-        </p>
+        <div className="rounded-lg border border-border bg-muted/30 p-8 text-center space-y-4">
+          <p className="text-muted-foreground">No care plan items yet. Complete your intake to get personalized items to track.</p>
+          <Link
+            href="/onboarding"
+            className="inline-flex rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+          >
+            Start intake →
+          </Link>
+        </div>
       ) : (
         <div className="space-y-6">
           {items.map((item) => (
