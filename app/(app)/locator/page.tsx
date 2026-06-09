@@ -3,6 +3,9 @@ import { createSupabaseServerClient } from '@/lib/server/supabase-server';
 import { createSupabaseAdminClient } from '@/lib/server/supabase-admin';
 import { FEATURE_FLAGS } from '@/lib/shared/config/feature-flags';
 import { DISCLAIMERS } from '@/lib/shared/copy/disclaimers';
+import { getUserTier } from '@/lib/server/subscriptions';
+import { hasAccess } from '@/lib/shared/utils/tier';
+import { UpgradeGate } from '@/components/shared/upgrade-gate';
 
 interface PageProps {
   searchParams: Promise<{ category?: string; state?: string; terpene?: string }>;
@@ -36,6 +39,23 @@ export default async function LocatorPage({ searchParams }: PageProps) {
   const supabase      = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
+
+  const tier = await getUserTier(user.id);
+  if (!hasAccess(tier, 'marketplace')) {
+    return (
+      <UpgradeGate
+        requiredTier="marketplace"
+        feature="Marketplace Access"
+        description="Browse products from our lab-verified dispensary and brand partners, and access exclusive member discounts."
+        bullets={[
+          'Product locator across dispensary & brand partners',
+          'Marketplace member discounts',
+          'Health & lab resource access',
+          'Full Education Hub (17+ articles)',
+        ]}
+      />
+    );
+  }
 
   const adminSupabase = createSupabaseAdminClient();
 

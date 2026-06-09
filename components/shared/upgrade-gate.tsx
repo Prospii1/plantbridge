@@ -1,14 +1,29 @@
 import Link from 'next/link';
+import type { SubscriptionTier } from '@/lib/server/stripe';
+
+const TIER_CTA: Partial<Record<SubscriptionTier, { label: string; price: string }>> = {
+  marketplace: { label: 'Marketplace Access', price: '$4.99/mo' },
+  self_guided: { label: 'Self-Guided',        price: '$19.99/mo' },
+  guided:      { label: 'Guided',             price: '$49.99/mo' },
+};
 
 interface UpgradeGateProps {
   feature: string;
   description: string;
   bullets: string[];
   severity?: number;
+  requiredTier?: SubscriptionTier;
 }
 
-export function UpgradeGate({ feature, description, bullets, severity }: UpgradeGateProps) {
+export function UpgradeGate({
+  feature,
+  description,
+  bullets,
+  severity,
+  requiredTier = 'self_guided',
+}: UpgradeGateProps) {
   const isHighSeverity = severity !== undefined && severity >= 7;
+  const cta = TIER_CTA[requiredTier] ?? TIER_CTA.self_guided!;
 
   return (
     <div className="mx-auto max-w-md py-12 px-4 flex flex-col items-center gap-6 text-center">
@@ -23,7 +38,7 @@ export function UpgradeGate({ feature, description, bullets, severity }: Upgrade
       {/* Header */}
       <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-          Self-Guided plan required
+          {cta.label} required
         </p>
         <h2 className="font-display text-2xl font-medium text-foreground leading-tight">
           {feature}
@@ -58,7 +73,7 @@ export function UpgradeGate({ feature, description, bullets, severity }: Upgrade
           className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground text-center hover:opacity-90 transition-opacity"
           style={{ boxShadow: '0 6px 18px -8px var(--primary)' }}
         >
-          Upgrade to Self-Guided — $19.99/mo
+          Upgrade to {cta.label} — {cta.price}
         </Link>
         <Link
           href="/education"

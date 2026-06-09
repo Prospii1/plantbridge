@@ -50,7 +50,7 @@ export function SidebarNav({ hasCoach }: SidebarNavProps) {
       )}
       {FEATURE_FLAGS.DISPENSARY_LOCATOR && (
         <Link href="/locator" className={linkClass('/locator')}>
-          Locator
+          Marketplace
         </Link>
       )}
     </nav>

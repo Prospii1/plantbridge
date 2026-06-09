@@ -34,6 +34,41 @@ const FEATURES = [
   },
 ];
 
+const PRICING_TIERS = [
+  {
+    name: 'Free',
+    price: '$0',
+    period: '/mo',
+    features: ['Wellness intake questionnaire', '2 starter education articles', 'Basic plant awareness'],
+    highlight: false,
+    cta: 'Get started free',
+  },
+  {
+    name: 'Marketplace Access',
+    price: '$4.99',
+    period: '/mo',
+    features: ['Full Education Hub (17+ articles)', 'Marketplace discounts', 'Health & lab resource access', 'Certifications & tools'],
+    highlight: true,
+    cta: 'Start for $4.99/mo',
+  },
+  {
+    name: 'Self-Guided',
+    price: '$19.99',
+    period: '/mo',
+    features: ['Everything in Marketplace', 'Personalized care plan', 'Dosing guidance', 'Outcome tracking', 'Titration path'],
+    highlight: false,
+    cta: 'Get Self-Guided',
+  },
+  {
+    name: 'Guided',
+    price: '$49.99',
+    period: '/mo',
+    features: ['Everything in Self-Guided', 'Dedicated cannabis coach', 'Monthly 1:1 sessions', 'Priority support'],
+    highlight: false,
+    cta: 'Get Guided',
+  },
+] as const;
+
 const TRUST_BADGES = [
   {
     label: 'Coach-reviewed',
@@ -166,6 +201,58 @@ export default function HomePage() {
             >
               <h3 className="font-semibold text-foreground">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Pricing ── */}
+      <section className="mx-auto max-w-4xl px-6 pb-20 space-y-12">
+        <div className="text-center space-y-2">
+          <h2 className="font-display text-2xl font-medium text-foreground">Simple, transparent pricing</h2>
+          <p className="text-sm text-muted-foreground">Start free. Upgrade when you&apos;re ready.</p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PRICING_TIERS.map(({ name, price, period, features, highlight, cta }) => (
+            <div
+              key={name}
+              className={`rounded-2xl border p-5 space-y-4 flex flex-col ${
+                highlight
+                  ? 'border-primary bg-primary/5 card-shadow'
+                  : 'border-border bg-card card-shadow'
+              }`}
+            >
+              {highlight && (
+                <span className="self-start rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold text-primary">Most popular</span>
+              )}
+              <div>
+                <p className="font-semibold text-foreground">{name}</p>
+                <p className="text-xl font-bold text-primary mt-1">
+                  {price}
+                  {period && <span className="text-xs font-normal text-muted-foreground">{period}</span>}
+                </p>
+              </div>
+              <ul className="flex-1 space-y-2">
+                {features.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-xs text-foreground">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
+                      <path d="M5 12.5l4.5 4.5L19 7"/>
+                    </svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/signup"
+                className={`block w-full rounded-full py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90 ${
+                  highlight
+                    ? 'bg-primary text-primary-foreground'
+                    : 'border border-border bg-card text-foreground hover:bg-secondary'
+                }`}
+              >
+                {cta}
+              </Link>
             </div>
           ))}
         </div>

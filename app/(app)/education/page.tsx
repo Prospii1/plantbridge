@@ -1,7 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { createSupabaseServerClient } from '@/lib/server/supabase-server';
+import { createSupabaseAdminClient } from '@/lib/server/supabase-admin';
 import { loadArticleList, type ArticleCategory, type ArticleMeta } from '@/lib/server/education/load-articles';
 import { DISCLAIMERS } from '@/lib/shared/copy/disclaimers';
+import { getUserTier } from '@/lib/server/subscriptions';
+import { hasAccess } from '@/lib/shared/utils/tier';
+import { UpgradeGate } from '@/components/shared/upgrade-gate';
 
 export const metadata: Metadata = { title: 'Education' };
 
@@ -29,18 +35,34 @@ const CATEGORY_DESCRIPTIONS: Partial<Record<ArticleCategory, string>> = {
 
 const CATEGORY_ORDER: ArticleCategory[] = ['condition', 'primer', 'cannabinoid', 'terpene', 'format', 'diy'];
 
+// Free users see articles in these categories as a teaser
+const FREE_CATEGORIES: ArticleCategory[] = ['primer', 'cannabinoid'];
+
 export default async function EducationPage({ searchParams }: PageProps) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const tier = await getUserTier(user.id);
+  const hasMarketplace = hasAccess(tier, 'marketplace');
+
   const { q } = await searchParams;
   const query = q?.toLowerCase().trim() ?? '';
 
   const allArticles = loadArticleList();
-  const articles = query
-    ? allArticles.filter((a) => a.title.toLowerCase().includes(query) || a.category.includes(query))
-    : allArticles;
+
+  // Free users only see primer + cannabinoid categories as teaser
+  const visibleArticles = hasMarketplace
+    ? allArticles
+    : allArticles.filter((a) => FREE_CATEGORIES.includes(a.category));
+
+  const filteredArticles = query
+    ? visibleArticles.filter((a) => a.title.toLowerCase().includes(query) || a.category.includes(query))
+    : visibleArticles;
 
   const grouped = CATEGORY_ORDER.reduce<Record<ArticleCategory, ArticleMeta[]>>(
     (acc, cat) => {
-      acc[cat] = articles.filter((a) => a.category === cat);
+      acc[cat] = filteredArticles.filter((a) => a.category === cat);
       return acc;
     },
     { condition: [], primer: [], cannabinoid: [], terpene: [], format: [], diy: [] },
@@ -54,7 +76,9 @@ export default async function EducationPage({ searchParams }: PageProps) {
       <div className="space-y-1 pt-2">
         <h1 className="font-display text-2xl font-medium text-foreground">Education Hub</h1>
         <p className="text-sm text-muted-foreground">
-          {totalCount} articles on cannabinoids, terpenes, formats, and conditions.
+          {hasMarketplace
+            ? `${totalCount} articles on cannabinoids, terpenes, formats, and conditions.`
+            : `${visibleArticles.length} of ${totalCount} articles available on the free plan.`}
         </p>
       </div>
 
@@ -79,9 +103,9 @@ export default async function EducationPage({ searchParams }: PageProps) {
 
       {query && (
         <p className="text-sm text-muted-foreground">
-          {articles.length === 0
+          {filteredArticles.length === 0
             ? `No articles found for "${q}"`
-            : `${articles.length} result${articles.length === 1 ? '' : 's'} for "${q}"`}
+            : `${filteredArticles.length} result${filteredArticles.length === 1 ? '' : 's'} for "${q}"`}
           {' — '}
           <Link href="/education" className="text-primary hover:underline">Clear search</Link>
         </p>
@@ -123,6 +147,23 @@ export default async function EducationPage({ searchParams }: PageProps) {
           </section>
         );
       })}
+
+      {/* Upgrade gate for free users */}
+      {!hasMarketplace && (
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-1">
+          <UpgradeGate
+            requiredTier="marketplace"
+            feature="Unlock the full Education Hub"
+            description="Access all articles on terpenes, conditions, formats, DIY medicine, and more."
+            bullets={[
+              'All 17+ articles across 6 categories',
+              'Marketplace discounts & partner offers',
+              'Health & lab resource access',
+              'Certifications & wellness tools',
+            ]}
+          />
+        </div>
+      )}
 
       <p className="text-xs text-muted-foreground border-t border-border pt-4 pb-2">
         {DISCLAIMERS.standard}

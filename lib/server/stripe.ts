@@ -19,14 +19,16 @@ export function getStripe(): Stripe {
 }
 
 export const STRIPE_PRICE_IDS = {
+  marketplace: process.env.STRIPE_MARKETPLACE_PRICE_ID ?? '',
   selfGuided: process.env.STRIPE_SELF_GUIDED_PRICE_ID ?? '',
   guided: process.env.STRIPE_GUIDED_PRICE_ID ?? '',
   concierge: process.env.STRIPE_CONCIERGE_PRICE_ID ?? '',
 } as const;
 
-export type SubscriptionTier = 'free' | 'self_guided' | 'guided' | 'concierge';
+export type SubscriptionTier = 'free' | 'marketplace' | 'self_guided' | 'guided' | 'concierge';
 
 export function tierFromPriceId(priceId: string): SubscriptionTier {
+  if (priceId && priceId === STRIPE_PRICE_IDS.marketplace) return 'marketplace';
   if (priceId && priceId === STRIPE_PRICE_IDS.guided) return 'guided';
   if (priceId && priceId === STRIPE_PRICE_IDS.concierge) return 'concierge';
   return 'self_guided';

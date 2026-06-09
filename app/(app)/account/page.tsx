@@ -19,13 +19,18 @@ const TIER_DETAILS: Record<SubscriptionTier, {
   free: {
     price: '$0',
     period: '/mo',
-    features: ['Wellness intake', 'Education hub (14 articles)', 'Basic plant awareness'],
+    features: ['Wellness intake (free)', '2 starter education articles', 'Basic plant awareness'],
+  },
+  marketplace: {
+    price: '$4.99',
+    period: '/mo',
+    features: ['Full Education Hub (17+ articles)', 'Marketplace discounts', 'Health & lab resource access', 'Certifications & tools'],
+    highlight: true,
   },
   self_guided: {
     price: '$19.99',
     period: '/mo',
-    features: ['Full personalized care plan', 'Dosing guidance per item', 'Outcome tracking', 'Titration path', 'Product matching'],
-    highlight: true,
+    features: ['Everything in Marketplace Access', 'Full personalized care plan', 'Dosing guidance per item', 'Outcome tracking', 'Titration path', 'Product matching'],
   },
   guided: {
     price: '$49.99',
@@ -89,8 +94,9 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
   // Tiers available for checkout — only show if price ID is configured
   const checkoutableTiers: SubscriptionTier[] = [];
-  if (STRIPE_PRICE_IDS.selfGuided) checkoutableTiers.push('self_guided');
-  if (STRIPE_PRICE_IDS.guided)     checkoutableTiers.push('guided');
+  if (STRIPE_PRICE_IDS.marketplace) checkoutableTiers.push('marketplace');
+  if (STRIPE_PRICE_IDS.selfGuided)  checkoutableTiers.push('self_guided');
+  if (STRIPE_PRICE_IDS.guided)      checkoutableTiers.push('guided');
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -175,6 +181,38 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         </div>
       </div>
 
+      {/* Marketplace → Self-Guided upgrade card */}
+      {isActive && currentTier === 'marketplace' && STRIPE_PRICE_IDS.selfGuided && (
+        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 space-y-3 card-shadow">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Ready for your personalized care plan?</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                Upgrade to Self-Guided ($19.99/mo) to unlock your full intake-driven care plan with dosing guidance, outcome tracking, and a personalized titration path.
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold text-primary">Self-Guided</span>
+          </div>
+          <ul className="space-y-1.5">
+            {TIER_DETAILS.self_guided.features.map((f) => (
+              <li key={f} className="flex items-start gap-2 text-xs text-foreground">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
+                  <path d="M5 12.5l4.5 4.5L19 7"/>
+                </svg>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <form action={createCheckoutSession}>
+            <input type="hidden" name="tier" value="self_guided" />
+            <button type="submit"
+              className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
+              Upgrade to Self-Guided — $19.99/mo
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* Guided upgrade card — shown inline for active self_guided users */}
       {isActive && currentTier === 'self_guided' && STRIPE_PRICE_IDS.guided && (
         <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 space-y-3 card-shadow">
@@ -212,7 +250,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         <div className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Upgrade your plan</h2>
           <div className="space-y-3">
-            {(['self_guided', 'guided', 'concierge'] as const).map((tier) => {
+            {(['marketplace', 'self_guided', 'guided', 'concierge'] as const).map((tier) => {
               const details      = TIER_DETAILS[tier];
               const isConfigured = checkoutableTiers.includes(tier);
               const isCurrent    = tier === currentTier;
