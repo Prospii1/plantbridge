@@ -9,11 +9,13 @@ interface SidebarNavProps {
 }
 
 const NAV_ITEMS = [
-  { href: '/onboarding', label: 'Intake' },
-  { href: '/care-plan', label: 'Care Plan' },
-  { href: '/education', label: 'Education' },
-  { href: '/tracking', label: 'Tracking' },
-  { href: '/account', label: 'Account' },
+  { href: '/dashboard',  label: 'Home' },
+  { href: '/care-plan',  label: 'Care Plan' },
+  { href: '/tracking',   label: 'Tracking' },
+  { href: '/education',  label: 'Education' },
+  { href: '/resources',  label: 'Resources' },
+  { href: '/media',      label: 'Media' },
+  { href: '/account',    label: 'Account' },
 ];
 
 export function SidebarNav({ hasCoach }: SidebarNavProps) {

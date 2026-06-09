@@ -5,25 +5,34 @@ const QuestionOptionSchema = z.object({
   label: z.string().min(1),
 });
 
+const ShowIfSchema = z.object({
+  answer: z.string().min(1),
+  includes_any: z.array(z.string().min(1)).min(1),
+}).optional();
+
+const baseId = z.string().regex(/^[a-z][a-z0-9.]+$/, 'Question ID must be dotted lowercase');
+
 export const IntakeQuestionSchema = z.discriminatedUnion('type', [
   z.object({
-    id: z.string().regex(/^[a-z][a-z0-9.]+$/, 'Question ID must be dotted lowercase'),
+    id: baseId,
     type: z.literal('single_choice'),
     text: z.string().min(1),
     subtext: z.string().optional(),
     required: z.boolean(),
     options: z.array(QuestionOptionSchema).min(2),
+    show_if: ShowIfSchema,
   }),
   z.object({
-    id: z.string().regex(/^[a-z][a-z0-9.]+$/, 'Question ID must be dotted lowercase'),
+    id: baseId,
     type: z.literal('multi_choice'),
     text: z.string().min(1),
     subtext: z.string().optional(),
     required: z.boolean(),
     options: z.array(QuestionOptionSchema).min(2),
+    show_if: ShowIfSchema,
   }),
   z.object({
-    id: z.string().regex(/^[a-z][a-z0-9.]+$/, 'Question ID must be dotted lowercase'),
+    id: baseId,
     type: z.literal('scale'),
     text: z.string().min(1),
     subtext: z.string().optional(),
@@ -32,13 +41,15 @@ export const IntakeQuestionSchema = z.discriminatedUnion('type', [
     max: z.number().int(),
     minLabel: z.string().optional(),
     maxLabel: z.string().optional(),
+    show_if: ShowIfSchema,
   }),
   z.object({
-    id: z.string().regex(/^[a-z][a-z0-9.]+$/, 'Question ID must be dotted lowercase'),
+    id: baseId,
     type: z.literal('boolean'),
     text: z.string().min(1),
     subtext: z.string().optional(),
     required: z.boolean(),
+    show_if: ShowIfSchema,
   }),
 ]);
 
@@ -52,5 +63,5 @@ export type ValidatedIntakeQuestionsFile = z.infer<typeof IntakeQuestionsFileSch
 
 export const IntakeAnswerSchema = z.record(
   z.string(),
-  z.union([z.string(), z.array(z.string()), z.number().int().min(1).max(5), z.boolean()]),
+  z.union([z.string(), z.array(z.string()), z.number().int().min(1).max(10), z.boolean()]),
 );

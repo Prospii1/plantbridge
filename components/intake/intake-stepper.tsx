@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { QuestionRenderer } from '@/components/intake/question-renderer';
 import type { ValidatedIntakeQuestion } from '@/lib/shared/validators/intake-questions';
@@ -12,15 +12,29 @@ interface IntakeStepperProps {
   submitAction: (prev: IntakeSubmitState, formData: FormData) => Promise<IntakeSubmitState>;
 }
 
+/** Returns true if the question should be shown given the current answers */
+function isVisible(question: ValidatedIntakeQuestion, answers: Record<string, IntakeAnswerValue>): boolean {
+  if (!question.show_if) return true;
+  const val = answers[question.show_if.answer];
+  if (Array.isArray(val)) {
+    return question.show_if.includes_any.some((v) => val.includes(v));
+  }
+  // single-value answer (e.g. single_choice stored as string)
+  if (typeof val === 'string') {
+    return question.show_if.includes_any.includes(val);
+  }
+  return false;
+}
+
 function SubmitButton({ canAdvance }: { canAdvance: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
       disabled={!canAdvance || pending}
-      className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-40"
+      className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90 disabled:pointer-events-none disabled:opacity-40"
     >
-      {pending ? 'Saving…' : 'Complete intake'}
+      {pending ? 'Building your plan…' : 'Build my care plan →'}
     </button>
   );
 }
@@ -30,9 +44,15 @@ export function IntakeStepper({ questions, submitAction }: IntakeStepperProps) {
   const [answers, setAnswers] = useState<Record<string, IntakeAnswerValue>>({});
   const [state, formAction] = useFormState(submitAction, {});
 
-  const current = questions[step] ?? questions[0];
-  const isLast = step === questions.length - 1;
-  const progress = ((step + 1) / questions.length) * 100;
+  // Recompute visible questions whenever answers change
+  const visibleQuestions = useMemo(
+    () => questions.filter((q) => isVisible(q, answers)),
+    [questions, answers],
+  );
+
+  const current = visibleQuestions[step] ?? visibleQuestions[0];
+  const isLast = step === visibleQuestions.length - 1;
+  const progress = ((step + 1) / visibleQuestions.length) * 100;
 
   if (!current) return null;
 
@@ -43,7 +63,7 @@ export function IntakeStepper({ questions, submitAction }: IntakeStepperProps) {
   function handleNext() {
     if (!current) return;
     if (current.required && answers[current.id] === undefined) return;
-    setStep((s) => s + 1);
+    setStep((s) => Math.min(s + 1, visibleQuestions.length - 1));
   }
 
   function handleBack() {
@@ -54,10 +74,10 @@ export function IntakeStepper({ questions, submitAction }: IntakeStepperProps) {
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-8">
-      {/* Progress bar */}
+      {/* Progress */}
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Question {step + 1} of {questions.length}</span>
+          <span>Question {step + 1} of {visibleQuestions.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
         <div className="h-1.5 w-full rounded-full bg-secondary">
@@ -69,13 +89,11 @@ export function IntakeStepper({ questions, submitAction }: IntakeStepperProps) {
       </div>
 
       {/* Question */}
-      {current && (
-        <QuestionRenderer
-          question={current}
-          value={answers[current.id]}
-          onChange={handleChange}
-        />
-      )}
+      <QuestionRenderer
+        question={current}
+        value={answers[current.id]}
+        onChange={handleChange}
+      />
 
       {/* Error */}
       {state?.error && (
@@ -88,14 +106,13 @@ export function IntakeStepper({ questions, submitAction }: IntakeStepperProps) {
           type="button"
           onClick={handleBack}
           disabled={step === 0}
-          className="rounded-lg border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary disabled:pointer-events-none disabled:opacity-40"
+          className="rounded-full border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-secondary disabled:pointer-events-none disabled:opacity-40"
         >
-          Back
+          ← Back
         </button>
 
         {isLast ? (
           <form action={formAction}>
-            {/* Hidden inputs carrying all answers */}
             {Object.entries(answers).map(([key, val]) =>
               Array.isArray(val)
                 ? val.map((v, i) => <input key={`${key}-${i}`} type="hidden" name={key} value={v} />)
@@ -108,9 +125,9 @@ export function IntakeStepper({ questions, submitAction }: IntakeStepperProps) {
             type="button"
             onClick={handleNext}
             disabled={!canAdvance}
-            className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-40"
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90 disabled:pointer-events-none disabled:opacity-40"
           >
-            Next
+            Continue →
           </button>
         )}
       </div>

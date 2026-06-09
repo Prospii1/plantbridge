@@ -7,18 +7,21 @@ export default function OnboardingPage() {
   const questions = loadIntakeQuestions();
 
   return (
-    <div className="min-h-screen bg-background py-12">
-      <div className="mx-auto max-w-2xl px-4">
-        <div className="mb-10 space-y-2 text-center">
-          <h1 className="text-2xl font-semibold text-foreground">Wellness Intake</h1>
-          <p className="text-muted-foreground">
-            A few questions to personalise your educational care plan.
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background">
+      <div className="mx-auto max-w-lg px-5 pt-10 pb-24">
+        <div className="mb-8 space-y-1.5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">Wellness intake</p>
+          <h1 className="font-display text-2xl font-medium text-foreground leading-snug">
+            Tell us about yourself
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Your answers build a personalized educational care plan. Takes about 3 minutes.
           </p>
         </div>
 
         <IntakeStepper questions={questions} submitAction={submitIntake} />
 
-        <p className="mt-10 text-center text-xs text-muted-foreground">
+        <p className="mt-8 text-center text-xs text-muted-foreground leading-relaxed">
           {DISCLAIMERS.standard}
         </p>
       </div>

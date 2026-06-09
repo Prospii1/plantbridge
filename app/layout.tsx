@@ -1,19 +1,22 @@
 import type { Metadata, Viewport } from 'next';
-import localFont from 'next/font/local';
+import { Hanken_Grotesk, Newsreader } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { PosthogProvider } from '@/components/shared/posthog-provider';
 import './globals.css';
 
-const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
+const hankenGrotesk = Hanken_Grotesk({
+  subsets: ['latin'],
   variable: '--font-sans',
-  weight: '100 900',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
 });
 
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-mono',
-  weight: '100 900',
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
 });
 
 export const metadata: Metadata = {
@@ -37,7 +40,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#2B4536',
+  themeColor: '#5a8a6a',
 };
 
 export default function RootLayout({
@@ -46,7 +49,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(geistSans.variable, geistMono.variable)}
+      className={cn(hankenGrotesk.variable, newsreader.variable)}
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background font-sans antialiased">

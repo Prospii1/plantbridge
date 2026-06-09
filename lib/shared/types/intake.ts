@@ -5,6 +5,14 @@ export interface QuestionOption {
   label: string;
 }
 
+/** Controls whether a question is shown based on a previous answer */
+export interface ShowIfCondition {
+  /** The question ID to check */
+  answer: string;
+  /** Show this question if the answer array includes at least one of these values */
+  includes_any: string[];
+}
+
 export interface IntakeQuestion {
   id: string;
   type: QuestionType;
@@ -16,6 +24,7 @@ export interface IntakeQuestion {
   max?: number;
   minLabel?: string;
   maxLabel?: string;
+  show_if?: ShowIfCondition;
 }
 
 export interface IntakeQuestionFile {

@@ -1,86 +1,92 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FEATURE_FLAGS } from '@/lib/shared/config/feature-flags';
 
 interface MobileNavProps {
   hasCoach: boolean;
 }
 
-const NAV_ITEMS = [
-  { href: '/onboarding', label: 'Intake' },
-  { href: '/care-plan', label: 'Care Plan' },
-  { href: '/education', label: 'Education' },
-  { href: '/tracking', label: 'Tracking' },
-  { href: '/account', label: 'Account' },
-];
+const TABS = [
+  {
+    href: '/dashboard',
+    label: 'Home',
+    icon: (active: boolean) => (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.1 : 1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 11l8-7 8 7M6 10v9h12v-9" />
+      </svg>
+    ),
+  },
+  {
+    href: '/care-plan',
+    label: 'Plan',
+    icon: (active: boolean) => (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.1 : 1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M5 4h9a2 2 0 012 2v14a2 2 0 00-2-2H5z"/><path d="M16 6h3v12a2 2 0 00-2-2h-1"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/tracking',
+    label: 'Track',
+    icon: (active: boolean) => (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.1 : 1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 19V5M4 19h16" /><path d="M8 16l3-4 3 2 4-6" />
+      </svg>
+    ),
+  },
+  {
+    href: '/education',
+    label: 'Learn',
+    icon: (active: boolean) => (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.1 : 1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M2 13l10 5 10-5"/><path d="M2 18l10 5 10-5"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/account',
+    label: 'Account',
+    icon: (active: boolean) => (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.1 : 1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="8" r="4" /><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" />
+      </svg>
+    ),
+  },
+] as const;
 
-export function MobileNav({ hasCoach }: MobileNavProps) {
-  const [open, setOpen] = useState(false);
+export function MobileNav({ hasCoach: _hasCoach }: MobileNavProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/');
 
-  const linkClass = (href: string) =>
-    `block rounded-md px-4 py-3 text-sm transition-colors hover:bg-sidebar-accent ${
-      isActive(href)
-        ? 'bg-sidebar-accent text-foreground font-medium'
-        : 'text-sidebar-foreground'
-    }`;
-
   return (
-    <div className="flex md:hidden flex-col border-b border-sidebar-border bg-sidebar">
-      <div className="flex items-center justify-between px-4 py-3">
-        <span className="text-base font-semibold text-primary">PlantBridge</span>
-        <button
-          onClick={() => setOpen((o) => !o)}
-          aria-label="Toggle navigation"
-          className="rounded-md p-2 text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-        >
-          {open ? (
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="2" y1="2" x2="16" y2="16" />
-              <line x1="16" y1="2" x2="2" y2="16" />
-            </svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="2" y1="5" x2="16" y2="5" />
-              <line x1="2" y1="9" x2="16" y2="9" />
-              <line x1="2" y1="13" x2="16" y2="13" />
-            </svg>
-          )}
-        </button>
-      </div>
-
-      {open && (
-        <div className="flex flex-col gap-1 px-2 pb-3" onClick={() => setOpen(false)}>
-          {NAV_ITEMS.map(({ href, label }) => (
-            <Link key={href} href={href} className={linkClass(href)}>
-              {label}
-            </Link>
-          ))}
-          {hasCoach && (
-            <Link href="/messages" className={linkClass('/messages')}>Messages</Link>
-          )}
-          {hasCoach && (
-            <Link href="/book" className={linkClass('/book')}>Book session</Link>
-          )}
-          {FEATURE_FLAGS.DISPENSARY_LOCATOR && (
-            <Link href="/locator" className={linkClass('/locator')}>Locator</Link>
-          )}
-          <form method="POST" action="/logout" className="mt-1">
-            <button
-              type="submit"
-              className="w-full rounded-md px-4 py-3 text-left text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-            >
-              Sign out
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden"
+      style={{
+        background: 'color-mix(in oklch, var(--card) 88%, transparent)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
+        boxShadow: '0 -1px 0 var(--border)',
+      }}
+      aria-label="Main navigation"
+    >
+      {TABS.map(({ href, label, icon }) => {
+        const active = isActive(href);
+        return (
+          <Link
+            key={href}
+            href={href}
+            className="flex flex-1 flex-col items-center gap-1 px-0 pb-6 pt-2.5 transition-colors"
+            style={{ color: active ? 'var(--primary)' : 'var(--muted-foreground)' }}
+            aria-current={active ? 'page' : undefined}
+          >
+            {icon(active)}
+            <span className="text-[11px] font-semibold">{label}</span>
+          </Link>
+        );
+      })}
+    </nav>
   );
 }

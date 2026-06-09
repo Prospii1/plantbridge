@@ -1,4 +1,5 @@
 import { createSupabaseAdminClient } from '@/lib/server/supabase-admin';
+import { computeUserTrends } from '@/lib/server/analytics/compute-user-trends';
 
 export default async function AdminAnalyticsPage() {
   const supabase = createSupabaseAdminClient();
@@ -10,6 +11,8 @@ export default async function AdminAnalyticsPage() {
     carePlanCountRes,
     outcomeCountRes,
     intakeCountRes,
+    conditionAnswersRes,
+    trends,
   ] = await Promise.all([
     supabase
       .from('recommendation_effectiveness')
@@ -30,6 +33,11 @@ export default async function AdminAnalyticsPage() {
     supabase
       .from('intake_sessions')
       .select('id', { count: 'exact', head: true }),
+    supabase
+      .from('intake_answers')
+      .select('answer')
+      .eq('question_id', 'condition.primary'),
+    computeUserTrends().catch(() => null),
   ]);
 
   const effectiveness = effectivenessRes.data ?? [];
@@ -50,10 +58,29 @@ export default async function AdminAnalyticsPage() {
   }
 
   const totalCarePlans = carePlanCountRes.count ?? 0;
-  const totalOutcomes = outcomeCountRes.count ?? 0;
-  const totalIntakes = intakeCountRes.count ?? 0;
-  const conversionRate =
-    totalIntakes > 0 ? Math.round((totalCarePlans / totalIntakes) * 100) : 0;
+  const totalOutcomes  = outcomeCountRes.count ?? 0;
+  const totalIntakes   = intakeCountRes.count ?? 0;
+  const conversionRate = totalIntakes > 0 ? Math.round((totalCarePlans / totalIntakes) * 100) : 0;
+
+  // Count condition selections from condition.primary answers (each is a JSONB array)
+  const conditionCounts: Record<string, number> = {};
+  for (const row of conditionAnswersRes.data ?? []) {
+    const conditions = Array.isArray(row.answer) ? (row.answer as string[]) : [];
+    for (const c of conditions) {
+      conditionCounts[c] = (conditionCounts[c] ?? 0) + 1;
+    }
+  }
+  const sortedConditions = Object.entries(conditionCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 10);
+  const maxConditionCount = sortedConditions[0]?.[1] ?? 1;
+
+  const CONDITION_LABELS: Record<string, string> = {
+    pain: 'Chronic pain', sleep: 'Sleep', anxiety: 'Anxiety', ptsd: 'PTSD',
+    menopause: 'Menopause', neuropathy: 'Neuropathy', arthritis: 'Arthritis',
+    parkinsons: "Parkinson's", inflammation: 'Inflammation', mood: 'Low mood',
+    focus: 'Focus', nausea: 'Nausea',
+  };
 
   return (
     <div className="max-w-4xl space-y-10">
@@ -156,6 +183,31 @@ export default async function AdminAnalyticsPage() {
         </div>
       </section>
 
+      {/* Condition popularity */}
+      <section className="space-y-4">
+        <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Top Conditions Selected</h2>
+        {sortedConditions.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No condition data yet.</p>
+        ) : (
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            {sortedConditions.map(([cond, count]) => (
+              <div key={cond} className="flex items-center gap-4 px-4 py-3 border-b border-border last:border-0">
+                <span className="w-32 text-sm text-foreground shrink-0 capitalize">
+                  {CONDITION_LABELS[cond] ?? cond}
+                </span>
+                <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${Math.round((count / maxConditionCount) * 100)}%` }}
+                  />
+                </div>
+                <span className="text-sm font-medium text-foreground w-8 text-right shrink-0">{count}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Intake funnel */}
       <section className="space-y-4">
         <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Intake Funnel</h2>
@@ -173,6 +225,87 @@ export default async function AdminAnalyticsPage() {
             <span className="text-sm font-semibold text-primary">{conversionRate}%</span>
           </div>
         </div>
+      </section>
+
+      {/* Learning Insights — algorithmic trend analysis */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Learning Insights</h2>
+          <span className="text-xs text-muted-foreground">
+            {trends ? `Computed ${new Date(trends.computedAt).toLocaleTimeString('en-US', { timeStyle: 'short' })}` : 'Live'}
+          </span>
+        </div>
+
+        {trends && trends.totalUsersWithLogs > 0 ? (
+          <div className="space-y-4">
+            {/* Platform health */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                { label: 'Avg platform rating', value: `${trends.avgPlatformRating}/5`, color: 'text-primary' },
+                { label: 'Improving', value: trends.improving, color: 'text-emerald-600' },
+                { label: 'Declining', value: trends.declining, color: 'text-red-500' },
+                { label: 'Stable', value: trends.stable, color: 'text-muted-foreground' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="rounded-lg border border-border bg-card p-4">
+                  <p className={`text-2xl font-semibold ${color}`}>{value}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Trend breakdown bar */}
+            {trends.totalUsersWithLogs > 0 && (
+              <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">User Outcome Trends</p>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Improving', count: trends.improving, color: 'bg-emerald-500' },
+                    { label: 'Stable',    count: trends.stable,    color: 'bg-amber-400' },
+                    { label: 'Declining', count: trends.declining,  color: 'bg-red-400' },
+                  ].map(({ label, count, color }) => {
+                    const pct = trends.totalUsersWithLogs > 0
+                      ? Math.round((count / trends.totalUsersWithLogs) * 100)
+                      : 0;
+                    return (
+                      <div key={label} className="flex items-center gap-3 text-sm">
+                        <span className="w-20 text-xs text-muted-foreground shrink-0">{label}</span>
+                        <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                          <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="text-xs text-foreground w-16 text-right shrink-0">
+                          {count} users ({pct}%)
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Trend = comparison of most recent 3 logs vs earlier logs. Requires 4+ logs per user.
+                  {trends.usersWithSevere > 0 && (
+                    <span className="text-red-500 font-medium"> · {trends.usersWithSevere} user{trends.usersWithSevere !== 1 ? 's' : ''} with severe side effects reported.</span>
+                  )}
+                </p>
+              </div>
+            )}
+
+            {/* ML boost explanation */}
+            <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-1">
+              <p className="text-xs font-medium text-foreground">How learning boosts work</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Rules with avg rating ≥ 4.0 receive a +0.10 confidence boost. Rules with ≥70% positive rate (rating ≥ 4)
+                receive an additional +0.10 boost. Max boost: +0.20 per rule. Boosts are applied at recommendation time
+                and do not modify the rules JSON. Run the effectiveness cron to update scores.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Trigger: <code className="font-mono bg-muted px-1 rounded">POST /api/analytics/effectiveness</code> with <code className="font-mono bg-muted px-1 rounded">Authorization: Bearer $CRON_SECRET</code>
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Not enough outcome data yet. Learning insights appear after users log outcomes.
+          </p>
+        )}
       </section>
     </div>
   );

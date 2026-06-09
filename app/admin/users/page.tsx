@@ -3,26 +3,33 @@ import { createSupabaseAdminClient } from '@/lib/server/supabase-admin';
 import { DataTable } from '@/components/admin/data-table';
 
 const PAGE_SIZE = 25;
+const TIERS = ['free', 'self_guided', 'guided', 'concierge'] as const;
+type Tier = (typeof TIERS)[number];
 
 interface PageProps {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; tier?: string }>;
 }
 
 export default async function AdminUsersPage({ searchParams }: PageProps) {
-  const { page: pageStr } = await searchParams;
+  const { page: pageStr, tier: tierParam } = await searchParams;
   const page = Math.max(1, parseInt(pageStr ?? '1', 10));
   const from = (page - 1) * PAGE_SIZE;
+  const activeTier = TIERS.includes(tierParam as Tier) ? (tierParam as Tier) : null;
 
   const supabase = createSupabaseAdminClient();
 
   // Fetch profiles with pagination
-  const { data: profiles, count } = await supabase
+  let query = supabase
     .from('profiles')
     .select('user_id, role, state, subscription_tier, age_verified_at, created_at', {
       count: 'exact',
     })
     .order('created_at', { ascending: false })
     .range(from, from + PAGE_SIZE - 1);
+
+  if (activeTier) query = query.eq('subscription_tier', activeTier);
+
+  const { data: profiles, count } = await query;
 
   const { data: authList } = await supabase.auth.admin.listUsers({ perPage: 1000 });
   const emailMap = new Map(
@@ -41,6 +48,25 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-foreground">Users</h1>
         <span className="text-sm text-muted-foreground">{count ?? 0} total</span>
+      </div>
+
+      {/* Tier filter */}
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href="/admin/users"
+          className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${!activeTier ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+        >
+          All
+        </Link>
+        {TIERS.map((t) => (
+          <Link
+            key={t}
+            href={`/admin/users?tier=${t}`}
+            className={`rounded-full px-3 py-1 text-xs font-medium border capitalize transition-colors ${activeTier === t ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+          >
+            {t.replace('_', ' ')}
+          </Link>
+        ))}
       </div>
 
       <DataTable
@@ -69,13 +95,13 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
       {totalPages > 1 && (
         <div className="flex gap-2">
           {page > 1 && (
-            <Link href={`/admin/users?page=${page - 1}`} className="rounded border border-border px-3 py-1 text-sm hover:bg-secondary">
+            <Link href={`/admin/users?page=${page - 1}${activeTier ? `&tier=${activeTier}` : ''}`} className="rounded border border-border px-3 py-1 text-sm hover:bg-secondary">
               ← Previous
             </Link>
           )}
           <span className="px-3 py-1 text-sm text-muted-foreground">Page {page} of {totalPages}</span>
           {page < totalPages && (
-            <Link href={`/admin/users?page=${page + 1}`} className="rounded border border-border px-3 py-1 text-sm hover:bg-secondary">
+            <Link href={`/admin/users?page=${page + 1}${activeTier ? `&tier=${activeTier}` : ''}`} className="rounded border border-border px-3 py-1 text-sm hover:bg-secondary">
               Next →
             </Link>
           )}

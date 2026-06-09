@@ -7,7 +7,11 @@ type LeafCondition =
   | { answer: string; in: string[] }
   | { answer: string; gte: number }
   | { answer: string; lte: number }
-  | { answer: string; eq: string | number | boolean };
+  | { answer: string; eq: string | number | boolean }
+  /** multi_choice: the answer array contains at least one of these values */
+  | { answer: string; includes_any: string[] }
+  /** multi_choice: the answer array contains all of these values */
+  | { answer: string; includes_all: string[] };
 
 type RuleCondition =
   | { all: RuleCondition[] }
@@ -67,6 +71,14 @@ function evalCondition(condition: RuleCondition, answers: IntakeAnswerMap): bool
   }
   if ('eq' in condition) {
     return raw === condition.eq;
+  }
+  if ('includes_any' in condition) {
+    const arr = raw as string[] | undefined;
+    return Array.isArray(arr) && condition.includes_any.some((v) => arr.includes(v));
+  }
+  if ('includes_all' in condition) {
+    const arr = raw as string[] | undefined;
+    return Array.isArray(arr) && condition.includes_all.every((v) => arr.includes(v));
   }
 
   return false;

@@ -21,7 +21,8 @@ export type AppEvent =
   | { event: 'care_plan_generated'; userId: string; planId: string; itemCount: number }
   | { event: 'outcome_logged'; userId: string; carePlanItemId: string; rating: number }
   | { event: 'checkout_started'; userId: string }
-  | { event: 'subscription_activated'; userId: string; tier: string };
+  | { event: 'subscription_activated'; userId: string; tier: string }
+  | { event: 'coach_alert_sent'; userId: string; alertType: string; avgRating?: number };
 
 export async function trackEvent(payload: AppEvent): Promise<void> {
   const ph = getPosthog();

@@ -24,9 +24,11 @@ async function assertAdmin(): Promise<void> {
 const CreatePartnerSchema = z.object({
   email: z.string().email(),
   company_name: z.string().min(1),
-  type: z.enum(['dispensary', 'delivery', 'wholesaler']),
+  type: z.enum(['dispensary', 'delivery', 'wholesaler', 'brand', 'cbd_vendor']),
   contact_email: z.string().email().optional().or(z.literal('')),
   region_states: z.string(),
+  website_url: z.string().url().optional().or(z.literal('')),
+  notes: z.string().max(1000).optional(),
 });
 
 export async function createPartner(formData: FormData): Promise<void> {
@@ -39,6 +41,8 @@ export async function createPartner(formData: FormData): Promise<void> {
     type: formData.get('type'),
     contact_email: formData.get('contact_email'),
     region_states: formData.get('region_states') ?? '',
+    website_url: formData.get('website_url'),
+    notes: formData.get('notes'),
   });
   if (!parsed.success) return;
 
@@ -59,6 +63,8 @@ export async function createPartner(formData: FormData): Promise<void> {
       type: parsed.data.type,
       contact_email: parsed.data.contact_email || null,
       region_states: regionStates,
+      website_url: parsed.data.website_url || null,
+      notes: parsed.data.notes || null,
     },
     { onConflict: 'user_id' },
   );

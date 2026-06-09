@@ -39,9 +39,12 @@ export default async function AdminDashboardPage() {
         {[
           { href: '/admin/users', label: 'Users' },
           { href: '/admin/subscriptions', label: 'Subscriptions' },
-          { href: '/admin/content', label: 'Content & Rules' },
+          { href: '/admin/content', label: 'Rules Engine' },
+          { href: '/admin/education', label: 'Education' },
           { href: '/admin/coaches', label: 'Coaches' },
           { href: '/admin/partners', label: 'Partners' },
+          { href: '/admin/brand-partners', label: 'Brand Partners' },
+          { href: '/admin/products', label: 'Products & COAs' },
           { href: '/admin/analytics', label: 'Analytics' },
         ].map(({ href, label }) => (
           <Link

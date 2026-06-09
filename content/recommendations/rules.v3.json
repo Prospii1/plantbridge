@@ -1,0 +1,312 @@
+{
+  "version": "3.0.0",
+  "engine_min": "0.2.0",
+  "rules": [
+    {
+      "id": "rec.cannabinoid.cbd.pain",
+      "category": "cannabinoid",
+      "subject": "cbd",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["pain", "arthritis", "neuropathy", "inflammation"] }] },
+      "weight": 0.78,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbd.pain",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.cbg.pain",
+      "category": "cannabinoid",
+      "subject": "cbg",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["pain", "inflammation", "arthritis"] }] },
+      "weight": 0.65,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbg.pain",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.caryophyllene.pain",
+      "category": "terpene",
+      "subject": "caryophyllene",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["pain", "arthritis", "neuropathy", "inflammation"] }] },
+      "weight": 0.72,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.caryophyllene.pain",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.format.topical.pain",
+      "category": "format",
+      "subject": "topical",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["pain", "arthritis", "neuropathy"] }] },
+      "weight": 0.68,
+      "education_ref": "edu.formats.overview",
+      "copy_ref": "copy.rec.topical.pain",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.cannabinoid.thc.cbd.pain.severe",
+      "category": "cannabinoid",
+      "subject": "thc-cbd-balanced",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["pain", "neuropathy"] },
+          { "answer": "severity.primary", "gte": 7 },
+          { "answer": "experience.level", "in": ["moderate", "experienced"] }
+        ]
+      },
+      "weight": 0.74,
+      "education_ref": "edu.cannabinoid.thc",
+      "copy_ref": "copy.rec.thc.cbd.pain.severe",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.cbd.sleep",
+      "category": "cannabinoid",
+      "subject": "cbd",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["sleep"] },
+          { "answer": "severity.primary", "gte": 4 }
+        ]
+      },
+      "weight": 0.80,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbd.sleep",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.cbn.sleep",
+      "category": "cannabinoid",
+      "subject": "cbn",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["sleep"] }] },
+      "weight": 0.70,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbn.sleep",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.linalool.sleep",
+      "category": "terpene",
+      "subject": "linalool",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["sleep", "anxiety"] }] },
+      "weight": 0.72,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.linalool.sleep",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.myrcene.sleep",
+      "category": "terpene",
+      "subject": "myrcene",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["sleep"] },
+          { "answer": "timing.preference", "in": ["nighttime", "evening"] }
+        ]
+      },
+      "weight": 0.65,
+      "education_ref": "edu.terpene.myrcene",
+      "copy_ref": "copy.rec.myrcene.sleep",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.timing.nighttime.sleep",
+      "category": "timing",
+      "subject": "nighttime-dose",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["sleep"] }] },
+      "weight": 0.75,
+      "education_ref": "edu.formats.overview",
+      "copy_ref": "copy.rec.timing.nighttime",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.cannabinoid.cbd.anxiety",
+      "category": "cannabinoid",
+      "subject": "cbd",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["anxiety", "ptsd"] }] },
+      "weight": 0.82,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbd.anxiety",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.linalool.anxiety",
+      "category": "terpene",
+      "subject": "linalool",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["anxiety", "ptsd"] }] },
+      "weight": 0.74,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.linalool.anxiety",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.limonene.anxiety",
+      "category": "terpene",
+      "subject": "limonene",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["anxiety", "mood"] }] },
+      "weight": 0.68,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.limonene.anxiety",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.cbg.anxiety",
+      "category": "cannabinoid",
+      "subject": "cbg",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["anxiety", "ptsd"] },
+          { "answer": "severity.primary", "gte": 6 }
+        ]
+      },
+      "weight": 0.62,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbg.anxiety",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.cbd.menopause",
+      "category": "cannabinoid",
+      "subject": "cbd",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["menopause"] }] },
+      "weight": 0.75,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbd.menopause",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.linalool.menopause",
+      "category": "terpene",
+      "subject": "linalool",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["menopause"] }] },
+      "weight": 0.65,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.linalool.menopause",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.cannabinoid.cbd.parkinsons",
+      "category": "cannabinoid",
+      "subject": "cbd",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["parkinsons"] }] },
+      "weight": 0.76,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.cbd.parkinsons",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.format.tincture.beginner",
+      "category": "format",
+      "subject": "tincture",
+      "when": { "all": [{ "answer": "experience.level", "in": ["beginner", "moderate"] }] },
+      "weight": 0.65,
+      "education_ref": "edu.formats.overview",
+      "copy_ref": "copy.rec.tincture.beginner",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.format.capsule.consistent",
+      "category": "format",
+      "subject": "capsule",
+      "when": { "all": [{ "answer": "timing.preference", "in": ["all.day"] }] },
+      "weight": 0.62,
+      "education_ref": "edu.formats.overview",
+      "copy_ref": "copy.rec.capsule.consistent",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.format.edible.nighttime",
+      "category": "format",
+      "subject": "edible",
+      "when": {
+        "all": [
+          { "answer": "timing.preference", "in": ["nighttime", "evening"] },
+          { "answer": "experience.level", "in": ["moderate", "experienced"] }
+        ]
+      },
+      "weight": 0.60,
+      "education_ref": "edu.formats.overview",
+      "copy_ref": "copy.rec.edible.nighttime",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.dosing.start.low.older",
+      "category": "timing",
+      "subject": "start-low-go-slow",
+      "when": { "all": [{ "answer": "age.range", "in": ["56.65", "66.75", "75.plus"] }] },
+      "weight": 0.80,
+      "education_ref": "edu.formats.overview",
+      "copy_ref": "copy.rec.dosing.older",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.terpene.limonene.mood",
+      "category": "terpene",
+      "subject": "limonene",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["mood"] }] },
+      "weight": 0.68,
+      "education_ref": "edu.terpene.linalool",
+      "copy_ref": "copy.rec.limonene.mood",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.pinene.focus",
+      "category": "terpene",
+      "subject": "pinene",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["focus"] },
+          { "answer": "timing.preference", "in": ["daytime"] }
+        ]
+      },
+      "weight": 0.64,
+      "education_ref": "edu.terpene.myrcene",
+      "copy_ref": "copy.rec.pinene.focus",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.terpene.myrcene.focus",
+      "category": "terpene",
+      "subject": "myrcene",
+      "when": { "all": [{ "answer": "condition.primary", "includes_any": ["focus"] }] },
+      "weight": 0.63,
+      "education_ref": "edu.terpene.myrcene",
+      "copy_ref": "copy.rec.myrcene.focus",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.safety.medication.interaction",
+      "category": "safety",
+      "subject": "medication-check",
+      "when": { "all": [{ "answer": "medication.current", "eq": true }] },
+      "weight": 1.0,
+      "education_ref": "edu.cannabinoid.cbd",
+      "copy_ref": "copy.rec.medication.interaction",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "version": "2.0.0",
+  "questions": [
+    {
+      "id": "condition.primary",
+      "type": "multi_choice",
+      "text": "What brings you to PlantBridge?",
+      "subtext": "Select everything you'd like support with. You can always add more later.",
+      "required": true,
+      "options": [
+        { "value": "pain",        "label": "Chronic pain" },
+        { "value": "sleep",       "label": "Sleep problems" },
+        { "value": "anxiety",     "label": "Anxiety & stress" },
+        { "value": "ptsd",        "label": "PTSD / trauma" },
+        { "value": "menopause",   "label": "Menopause symptoms" },
+        { "value": "neuropathy",  "label": "Neuropathy / nerve pain" },
+        { "value": "arthritis",   "label": "Arthritis / joint pain" },
+        { "value": "parkinsons",  "label": "Parkinson's" },
+        { "value": "inflammation","label": "Inflammation" },
+        { "value": "mood",        "label": "Low mood / depression" },
+        { "value": "focus",       "label": "Focus & brain fog" },
+        { "value": "nausea",      "label": "Nausea / appetite" }
+      ]
+    },
+    {
+      "id": "condition.followup.pain",
+      "type": "single_choice",
+      "text": "What type of pain are you dealing with?",
+      "subtext": "Choose the one that affects you most.",
+      "required": false,
+      "show_if": { "answer": "condition.primary", "includes_any": ["pain", "arthritis", "neuropathy"] },
+      "options": [
+        { "value": "chronic.joint",  "label": "Chronic joint or arthritis pain" },
+        { "value": "nerve",          "label": "Nerve / neuropathic pain" },
+        { "value": "back",           "label": "Back or muscle pain" },
+        { "value": "headache",       "label": "Headaches or migraines" },
+        { "value": "acute",          "label": "Acute pain (injury, post-surgery)" }
+      ]
+    },
+    {
+      "id": "condition.followup.anxiety",
+      "type": "single_choice",
+      "text": "How does your anxiety most often show up?",
+      "required": false,
+      "show_if": { "answer": "condition.primary", "includes_any": ["anxiety", "ptsd"] },
+      "options": [
+        { "value": "general",      "label": "General day-to-day worry" },
+        { "value": "social",       "label": "Social anxiety" },
+        { "value": "panic",        "label": "Panic attacks" },
+        { "value": "racing.mind",  "label": "Racing thoughts at night" },
+        { "value": "hypervigilance","label": "Hypervigilance / hyperarousal" }
+      ]
+    },
+    {
+      "id": "condition.followup.sleep",
+      "type": "single_choice",
+      "text": "What best describes your sleep difficulty?",
+      "required": false,
+      "show_if": { "answer": "condition.primary", "includes_any": ["sleep"] },
+      "options": [
+        { "value": "falling.asleep",  "label": "Hard to fall asleep" },
+        { "value": "staying.asleep",  "label": "Waking up during the night" },
+        { "value": "early.waking",    "label": "Waking too early and can't get back" },
+        { "value": "unrestorative",   "label": "Sleep feels unrestorative" }
+      ]
+    },
+    {
+      "id": "severity.primary",
+      "type": "scale",
+      "text": "How severe are your symptoms day-to-day?",
+      "subtext": "1 = Barely noticeable  —  10 = Severely impacts daily life",
+      "required": true,
+      "min": 1,
+      "max": 10,
+      "minLabel": "Barely noticeable",
+      "maxLabel": "Severely impacts daily life"
+    },
+    {
+      "id": "condition.secondary",
+      "type": "multi_choice",
+      "text": "Anything else going on?",
+      "subtext": "Optional — select any secondary issues you'd also like addressed.",
+      "required": false,
+      "options": [
+        { "value": "fatigue",   "label": "Fatigue / low energy" },
+        { "value": "appetite",  "label": "Appetite or digestive issues" },
+        { "value": "mood",      "label": "Low mood" },
+        { "value": "focus",     "label": "Focus / brain fog" },
+        { "value": "nausea",    "label": "Nausea" },
+        { "value": "spasticity","label": "Muscle spasms / spasticity" },
+        { "value": "nothing",   "label": "Nothing else" }
+      ]
+    },
+    {
+      "id": "experience.level",
+      "type": "single_choice",
+      "text": "How familiar are you with cannabis products?",
+      "subtext": "No wrong answer — this helps set your starting dose.",
+      "required": true,
+      "options": [
+        { "value": "beginner",    "label": "New — little to no prior experience" },
+        { "value": "moderate",    "label": "Some experience — used occasionally" },
+        { "value": "experienced", "label": "Regular use — comfortable with different products" }
+      ]
+    },
+    {
+      "id": "age.range",
+      "type": "single_choice",
+      "text": "What is your age range?",
+      "subtext": "Age can influence how cannabinoids are absorbed and tolerated.",
+      "required": false,
+      "options": [
+        { "value": "21.40",   "label": "21 – 40" },
+        { "value": "41.55",   "label": "41 – 55" },
+        { "value": "56.65",   "label": "56 – 65" },
+        { "value": "66.75",   "label": "66 – 75" },
+        { "value": "75.plus", "label": "75+" }
+      ]
+    },
+    {
+      "id": "timing.preference",
+      "type": "single_choice",
+      "text": "When do you need support most?",
+      "subtext": "This helps us recommend products that fit your daily rhythm.",
+      "required": false,
+      "options": [
+        { "value": "daytime",  "label": "Daytime — stay functional and clear-headed" },
+        { "value": "evening",  "label": "Evening — wind down after the day" },
+        { "value": "nighttime","label": "Nighttime — sleep support" },
+        { "value": "all.day",  "label": "All day — consistent relief" }
+      ]
+    },
+    {
+      "id": "format.preference",
+      "type": "multi_choice",
+      "text": "Any consumption format preferences?",
+      "subtext": "Select all that appeal to you, or skip if you have no preference.",
+      "required": false,
+      "options": [
+        { "value": "tincture",    "label": "Tinctures / oils (under the tongue)" },
+        { "value": "capsule",     "label": "Capsules / softgels" },
+        { "value": "edible",      "label": "Edibles (gummies, chocolates)" },
+        { "value": "vaporizer",   "label": "Vaporizer / inhale" },
+        { "value": "topical",     "label": "Topicals (creams, balms) — localised relief" },
+        { "value": "flower",      "label": "Flower / pre-rolls" },
+        { "value": "no.preference","label": "No preference" }
+      ]
+    },
+    {
+      "id": "medication.current",
+      "type": "boolean",
+      "text": "Are you currently taking any prescription medications?",
+      "subtext": "This helps us include relevant guidance. We will never share your medical information.",
+      "required": true
+    }
+  ]
+}

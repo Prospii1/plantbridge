@@ -6,6 +6,8 @@ import { loadIntakeQuestions } from '@/lib/server/intake/load-questions';
 import { IntakeAnswerSchema } from '@/lib/shared/validators/intake-questions';
 import { loadLatestRules } from '@/lib/server/recommend/load-rules';
 import { executeRules, ENGINE_VERSION } from '@/lib/server/recommend/rules-executor';
+import { getUserTier } from '@/lib/server/subscriptions';
+import { hasAccess } from '@/lib/shared/utils/tier';
 import { log } from '@/lib/observability/log';
 import { trackEvent } from '@/lib/observability/events';
 import type { IntakeAnswerMap } from '@/lib/shared/types/intake';
@@ -59,7 +61,7 @@ export async function submitIntake(
   // ── Save intake session ──────────────────────────────────────────────────
   const { data: session, error: sessionError } = await supabase
     .from('intake_sessions')
-    .insert({ user_id: user.id, questions_version: '1.0.0' })
+    .insert({ user_id: user.id, questions_version: '2.0.0' })
     .select('id')
     .single();
 
@@ -106,6 +108,13 @@ export async function submitIntake(
     log.error('recommend_profile_insert_failed', { userId: user.id, error: profileError?.message });
     return { error: 'Something went wrong generating your plan. Please try again.' };
   }
+
+  // ── Archive any existing active plans ────────────────────────────────────
+  await supabase
+    .from('care_plans')
+    .update({ status: 'archived' })
+    .eq('user_id', user.id)
+    .eq('status', 'active');
 
   // ── Create care plan ─────────────────────────────────────────────────────
   const { data: plan, error: planError } = await supabase
@@ -158,6 +167,14 @@ export async function submitIntake(
     trackEvent({ event: 'intake_completed', userId: user.id, sessionId: session.id }),
     trackEvent({ event: 'care_plan_generated', userId: user.id, planId: plan.id, itemCount: matches.length }),
   ]);
+
+  // For free users, append severity context so the upgrade gate can personalise its message
+  const tier = await getUserTier(user.id);
+  const severity = typeof answers['severity.primary'] === 'number' ? answers['severity.primary'] : 0;
+
+  if (!hasAccess(tier, 'self_guided') && severity >= 7) {
+    redirect(`/care-plan/${plan.id}?severity=${severity}`);
+  }
 
   redirect(`/care-plan/${plan.id}`);
 }

@@ -30,78 +30,153 @@ const FEATURES = [
   },
   {
     title: 'Outcome tracking',
-    body: 'See what\'s actually working for you with a simple structured log.',
+    body: "See what's actually working for you with a simple structured log.",
   },
 ];
 
+const TRUST_BADGES = [
+  {
+    label: 'Coach-reviewed',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'Lab-verified',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M10 4v5l-4.5 8a2 2 0 002 3h9a2 2 0 002-3L14 9V4"/>
+        <path d="M9 4h6M7.5 15h9"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'Private',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="5" y="11" width="14" height="9" rx="2"/>
+        <path d="M8 11V8a4 4 0 018 0v3"/>
+      </svg>
+    ),
+  },
+];
+
+function PlantBridgeMark({ size = 76 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      style={{ display: 'block' }}
+      aria-label="PlantBridge"
+    >
+      <circle cx="24" cy="24" r="22" fill="none" stroke="var(--primary)" strokeWidth="2" strokeOpacity="0.25" />
+      <path d="M9 32c5-7 25-7 30 0" fill="none" stroke="var(--primary)" strokeWidth="2.4" strokeLinecap="round" strokeOpacity="0.5" />
+      <path d="M24 34V18" fill="none" stroke="var(--primary)" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M24 24c0-4-2.6-6.4-7.5-6.4C16.5 22 19.5 24 24 24z" fill="var(--primary)" />
+      <path d="M24 20c0-3.6 2.4-5.6 6.6-5.6C30.6 18.2 28 20 24 20z" fill="var(--primary)" fillOpacity="0.7" />
+    </svg>
+  );
+}
+
 export default function HomePage() {
   return (
-    <div className="mx-auto max-w-4xl px-6 py-20 space-y-24">
-      {/* Hero */}
-      <div className="flex flex-col items-center gap-8 text-center">
-        <div className="flex flex-col gap-4 max-w-3xl">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            Cannabis wellness,{' '}
-            <span className="text-primary">personalized for you.</span>
+    <div>
+      {/* ── Hero ── */}
+      <section className="bg-gradient-to-b from-secondary to-background px-6 py-20 flex flex-col items-center gap-8 text-center">
+        {/* Animated mark */}
+        <div
+          className="w-32 h-32 rounded-full bg-card flex items-center justify-center animate-breathe"
+          style={{ boxShadow: '0 20px 50px -20px var(--primary)' }}
+        >
+          <PlantBridgeMark size={76} />
+        </div>
+
+        <div className="flex flex-col gap-4 max-w-lg">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            Personalized cannabis care
+          </p>
+          <h1 className="font-display text-4xl sm:text-5xl font-medium leading-tight tracking-tight text-foreground text-balance">
+            Relief, guided by{' '}
+            <em className="not-italic text-primary">your</em> body.
           </h1>
-          <p className="text-lg text-muted-foreground">
-            PlantBridge guides you through a personalized intake and builds an
-            educational care plan around your wellness goals — cannabinoids,
-            terpenes, formats, and timing that may support what you&apos;re
-            looking for.
+          <p className="text-base text-muted-foreground leading-relaxed">
+            Answer a few questions and we&apos;ll build an educational care plan tuned
+            to your wellness goals — no guesswork at the dispensary counter.
           </p>
         </div>
 
-        <div className="flex gap-4">
+        {/* Trust badges */}
+        <div className="flex flex-wrap items-center justify-center gap-5">
+          {TRUST_BADGES.map(({ label, icon }) => (
+            <div key={label} className="flex items-center gap-2 text-muted-foreground">
+              <span className="text-primary">{icon}</span>
+              <span className="text-sm font-medium">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
           <Link
             href="/signup"
-            className="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+            className="flex-1 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground text-center hover:opacity-90 transition-opacity"
+            style={{ boxShadow: '0 6px 18px -8px var(--primary)' }}
           >
-            Get started free
+            Get started
           </Link>
           <Link
             href="/login"
-            className="rounded-md border border-border px-6 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            className="flex-1 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground text-center hover:bg-secondary transition-colors"
           >
             Sign in
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* How it works */}
-      <div className="space-y-10">
-        <h2 className="text-center text-2xl font-semibold text-foreground">How it works</h2>
+      {/* ── How it works ── */}
+      <section className="mx-auto max-w-4xl px-6 py-20 space-y-12">
+        <h2 className="text-center font-display text-2xl font-medium text-foreground">
+          How it works
+        </h2>
         <div className="grid gap-8 sm:grid-cols-3">
           {HOW_IT_WORKS.map(({ step, title, body }) => (
             <div key={step} className="flex flex-col gap-3">
-              <span className="text-3xl font-bold text-primary/30">{step}</span>
+              <span className="text-3xl font-bold text-primary/25">{step}</span>
               <h3 className="font-semibold text-foreground">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Features */}
-      <div className="space-y-10">
-        <h2 className="text-center text-2xl font-semibold text-foreground">Why PlantBridge</h2>
-        <div className="grid gap-6 sm:grid-cols-3">
+      {/* ── Features ── */}
+      <section className="mx-auto max-w-4xl px-6 pb-20 space-y-12">
+        <h2 className="text-center font-display text-2xl font-medium text-foreground">
+          Why PlantBridge
+        </h2>
+        <div className="grid gap-5 sm:grid-cols-3">
           {FEATURES.map(({ title, body }) => (
             <div
               key={title}
-              className="rounded-lg border border-border bg-card p-6 space-y-2"
+              className="rounded-lg border border-border bg-card p-6 space-y-2 card-shadow"
             >
               <h3 className="font-semibold text-foreground">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Disclaimer */}
-      <p className="text-center text-xs text-muted-foreground max-w-xl mx-auto">
-        {DISCLAIMERS.standard}
-      </p>
+      {/* ── Disclaimer ── */}
+      <div className="px-6 pb-16">
+        <p className="text-center text-xs text-muted-foreground max-w-xl mx-auto">
+          {DISCLAIMERS.standard}
+        </p>
+      </div>
     </div>
   );
 }

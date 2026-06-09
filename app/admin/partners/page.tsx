@@ -51,6 +51,8 @@ export default async function AdminPartnersPage() {
               <option value="dispensary">Dispensary</option>
               <option value="delivery">Delivery</option>
               <option value="wholesaler">Wholesaler</option>
+              <option value="brand">Brand</option>
+              <option value="cbd_vendor">CBD Vendor</option>
             </select>
           </div>
           <div className="space-y-1">

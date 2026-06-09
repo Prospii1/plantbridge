@@ -36,10 +36,10 @@ export default async function CoachClientDetailPage({ params }: Props) {
       .single(),
     adminSupabase
       .from('outcome_logs')
-      .select('id, logged_at, rating, notes')
+      .select('id, logged_at, rating, notes, metadata')
       .eq('user_id', userId)
       .order('logged_at', { ascending: false })
-      .limit(5),
+      .limit(10),
   ]);
 
   if (!assignmentRes.data) notFound();
@@ -105,15 +105,48 @@ export default async function CoachClientDetailPage({ params }: Props) {
       <section className="rounded-lg border border-border bg-card p-5 space-y-3">
         <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Recent Outcome Logs</h2>
         {outcomes.length > 0 ? (
-          <ul className="space-y-2 text-sm">
-            {outcomes.map((o) => (
-              <li key={o.id} className="flex justify-between text-foreground">
-                <span>Rating: {o.rating}/5{o.notes ? ` — ${o.notes.slice(0, 60)}` : ''}</span>
-                <span className="text-muted-foreground text-xs">
-                  {new Date(o.logged_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-                </span>
-              </li>
-            ))}
+          <ul className="space-y-3">
+            {outcomes.map((o) => {
+              const meta = (o.metadata ?? {}) as Record<string, unknown>;
+              const sideEffects  = meta.side_effects  as string | undefined;
+              const symptomLevel = meta.symptom_level as number | undefined;
+              const doseTaken    = meta.dose_taken    as string | undefined;
+              const isSevere     = sideEffects === 'severe';
+
+              return (
+                <li
+                  key={o.id}
+                  className={`rounded-lg p-3 space-y-2 text-sm ${isSevere ? 'border border-red-200 bg-red-50' : 'border border-border/60 bg-muted/20'}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-foreground">{o.rating}/5 effective</span>
+                      {symptomLevel !== undefined && (
+                        <span className="text-xs text-muted-foreground">· symptom {symptomLevel}/10</span>
+                      )}
+                      {doseTaken && (
+                        <span className="rounded-full border border-border bg-card px-2 py-0.5 text-xs text-muted-foreground">
+                          {doseTaken}
+                        </span>
+                      )}
+                      {sideEffects && sideEffects !== 'none' && (
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          isSevere ? 'bg-red-100 text-red-700'
+                          : sideEffects === 'moderate' ? 'bg-orange-100 text-orange-700'
+                          : 'bg-amber-100 text-amber-700'
+                        }`}>
+                          {sideEffects} side effects
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {new Date(o.logged_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                    </span>
+                  </div>
+                  {o.notes && <p className="text-xs text-muted-foreground">{o.notes}</p>}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="text-sm text-muted-foreground">No outcome logs yet.</p>

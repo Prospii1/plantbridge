@@ -46,7 +46,8 @@ export default async function AppLayout({
       {/* Mobile header */}
       <MobileNav hasCoach={hasCoach} />
 
-      <main className="flex-1 overflow-auto p-6">{children}</main>
+      {/* pb-24 on mobile leaves room for the fixed bottom tab bar */}
+      <main className="flex-1 overflow-auto p-6 pb-24 md:pb-6">{children}</main>
     </div>
   );
 }
