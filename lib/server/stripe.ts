@@ -19,17 +19,20 @@ export function getStripe(): Stripe {
 }
 
 export const STRIPE_PRICE_IDS = {
-  marketplace: process.env.STRIPE_MARKETPLACE_PRICE_ID ?? '',
-  selfGuided: process.env.STRIPE_SELF_GUIDED_PRICE_ID ?? '',
-  guided: process.env.STRIPE_GUIDED_PRICE_ID ?? '',
-  concierge: process.env.STRIPE_CONCIERGE_PRICE_ID ?? '',
+  marketplace:  process.env.STRIPE_MARKETPLACE_PRICE_ID ?? '',
+  selfGuided:   process.env.STRIPE_SELF_GUIDED_PRICE_ID ?? '',
+  consultation: process.env.STRIPE_CONSULTATION_PRICE_ID ?? '',
+  guided:       process.env.STRIPE_GUIDED_PRICE_ID ?? '',
+  concierge:    process.env.STRIPE_CONCIERGE_PRICE_ID ?? '',
 } as const;
 
-export type SubscriptionTier = 'free' | 'marketplace' | 'self_guided' | 'guided' | 'concierge';
+// consultation = Tier 4: $199.99 one-time payment, then reverts to self_guided tier
+export type SubscriptionTier = 'free' | 'marketplace' | 'self_guided' | 'consultation' | 'guided' | 'concierge';
 
 export function tierFromPriceId(priceId: string): SubscriptionTier {
-  if (priceId && priceId === STRIPE_PRICE_IDS.marketplace) return 'marketplace';
-  if (priceId && priceId === STRIPE_PRICE_IDS.guided) return 'guided';
-  if (priceId && priceId === STRIPE_PRICE_IDS.concierge) return 'concierge';
+  if (priceId && priceId === STRIPE_PRICE_IDS.marketplace)  return 'marketplace';
+  if (priceId && priceId === STRIPE_PRICE_IDS.consultation) return 'consultation';
+  if (priceId && priceId === STRIPE_PRICE_IDS.guided)       return 'guided';
+  if (priceId && priceId === STRIPE_PRICE_IDS.concierge)    return 'concierge';
   return 'self_guided';
 }

@@ -37,35 +37,63 @@ const FEATURES = [
 const PRICING_TIERS = [
   {
     name: 'Free',
+    tier: 1,
     price: '$0',
     period: '/mo',
-    features: ['Wellness intake questionnaire', '2 starter education articles', 'Basic plant awareness'],
+    features: ['Free intake', 'Education hub preview', 'Basic plant awareness', 'General information'],
+    note: 'Premium content locked',
     highlight: false,
     cta: 'Get started free',
+    contactOnly: false,
+    oneTime: false,
   },
   {
     name: 'Marketplace Access',
+    tier: 2,
     price: '$4.99',
     period: '/mo',
-    features: ['Full Education Hub (17+ articles)', 'Marketplace discounts', 'Health & lab resource access', 'Certifications & tools'],
+    features: ['Full Education Hub', 'Marketplace discounts', 'Health & lab access', 'Certifications & tools'],
+    note: 'Intake + care plan upgrade required',
     highlight: true,
     cta: 'Start for $4.99/mo',
+    contactOnly: false,
+    oneTime: false,
   },
   {
-    name: 'Self-Guided',
+    name: 'Self-Guided Care Plan',
+    tier: 3,
     price: '$19.99',
     period: '/mo',
-    features: ['Everything in Marketplace', 'Personalized care plan', 'Dosing guidance', 'Outcome tracking', 'Titration path'],
+    features: ['Guided intake unlocked', 'Personalized care plan', 'Saved recommendations', 'Outcome tracking'],
+    note: '',
     highlight: false,
     cta: 'Get Self-Guided',
+    contactOnly: false,
+    oneTime: false,
   },
   {
-    name: 'Guided',
-    price: '$49.99',
-    period: '/mo',
-    features: ['Everything in Self-Guided', 'Dedicated cannabis coach', 'Monthly 1:1 sessions', 'Priority support'],
+    name: 'Consultation',
+    tier: 4,
+    price: '$199.99',
+    period: 'one-time',
+    features: ['Self-guided access', '30-min expert consultation', 'Care plan review', 'Dosing & timing guidance', 'Progress check-in'],
+    note: '$19.99/month thereafter',
     highlight: false,
-    cta: 'Get Guided',
+    cta: 'Book a consultation',
+    contactOnly: false,
+    oneTime: true,
+  },
+  {
+    name: 'Concierge',
+    tier: 5,
+    price: 'Contact us',
+    period: '',
+    features: ['Premium support', 'Priority coach access', 'White-glove experience', 'Gold · Platinum · Diamond plans'],
+    note: '',
+    highlight: false,
+    cta: 'Contact us',
+    contactOnly: true,
+    oneTime: false,
   },
 ] as const;
 
@@ -213,8 +241,8 @@ export default function HomePage() {
           <p className="text-sm text-muted-foreground">Start free. Upgrade when you&apos;re ready.</p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {PRICING_TIERS.map(({ name, price, period, features, highlight, cta }) => (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {PRICING_TIERS.map(({ name, tier, price, period, features, note, highlight, cta, contactOnly, oneTime }) => (
             <div
               key={name}
               className={`rounded-2xl border p-5 space-y-4 flex flex-col ${
@@ -223,36 +251,49 @@ export default function HomePage() {
                   : 'border-border bg-card card-shadow'
               }`}
             >
-              {highlight && (
-                <span className="self-start rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold text-primary">Most popular</span>
-              )}
-              <div>
-                <p className="font-semibold text-foreground">{name}</p>
-                <p className="text-xl font-bold text-primary mt-1">
-                  {price}
-                  {period && <span className="text-xs font-normal text-muted-foreground">{period}</span>}
-                </p>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] font-semibold text-muted-foreground">Tier {tier}</span>
+                  {highlight && (
+                    <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">Popular</span>
+                  )}
+                </div>
+                <p className="font-semibold text-foreground text-sm leading-tight">{name}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-bold text-primary">{price}</span>
+                  {period && <span className="text-xs text-muted-foreground">{period}</span>}
+                </div>
+                {note && <p className="text-[10px] text-muted-foreground italic leading-tight">{note}</p>}
               </div>
-              <ul className="flex-1 space-y-2">
+              <ul className="flex-1 space-y-1.5">
                 {features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-xs text-foreground">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
+                  <li key={f} className="flex items-start gap-1.5 text-xs text-foreground">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
                       <path d="M5 12.5l4.5 4.5L19 7"/>
                     </svg>
                     {f}
                   </li>
                 ))}
               </ul>
-              <Link
-                href="/signup"
-                className={`block w-full rounded-full py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90 ${
-                  highlight
-                    ? 'bg-primary text-primary-foreground'
-                    : 'border border-border bg-card text-foreground hover:bg-secondary'
-                }`}
-              >
-                {cta}
-              </Link>
+              {contactOnly ? (
+                <a
+                  href="mailto:hello@plantbridge.co"
+                  className="block w-full rounded-full py-2.5 text-center text-sm font-semibold border border-border bg-card text-foreground hover:bg-secondary transition-colors"
+                >
+                  {cta}
+                </a>
+              ) : (
+                <Link
+                  href={oneTime ? '/signup?plan=consultation' : '/signup'}
+                  className={`block w-full rounded-full py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90 ${
+                    highlight
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border border-border bg-card text-foreground hover:bg-secondary'
+                  }`}
+                >
+                  {cta}
+                </Link>
+              )}
             </div>
           ))}
         </div>

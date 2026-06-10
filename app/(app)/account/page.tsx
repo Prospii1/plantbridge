@@ -10,38 +10,93 @@ interface AccountPageProps {
   searchParams: Promise<{ checkout?: string; error?: string }>;
 }
 
-const TIER_DETAILS: Record<SubscriptionTier, {
+interface TierDetail {
   price: string;
   period: string;
+  badge?: string;
   features: string[];
+  note?: string;
   highlight?: boolean;
-}> = {
+  contactOnly?: boolean;
+  oneTime?: boolean;
+}
+
+const TIER_DETAILS: Record<SubscriptionTier, TierDetail> = {
   free: {
     price: '$0',
-    period: '/mo',
-    features: ['Wellness intake (free)', '2 starter education articles', 'Basic plant awareness'],
+    period: '/month',
+    features: [
+      'Free intake',
+      'Education hub access (preview)',
+      'Basic plant awareness',
+      'General information',
+    ],
+    note: 'Premium content locked',
   },
   marketplace: {
     price: '$4.99',
-    period: '/mo',
-    features: ['Full Education Hub (17+ articles)', 'Marketplace discounts', 'Health & lab resource access', 'Certifications & tools'],
+    period: '/month',
+    features: [
+      'Education Hub (full access)',
+      'Marketplace discounts',
+      'Health & lab access',
+      'Certifications & tools',
+    ],
+    note: 'Upgrade required for guided intake + care plan',
     highlight: true,
   },
   self_guided: {
     price: '$19.99',
-    period: '/mo',
-    features: ['Everything in Marketplace Access', 'Full personalized care plan', 'Dosing guidance per item', 'Outcome tracking', 'Titration path', 'Product matching'],
+    period: '/month',
+    features: [
+      'Guided intake unlocked',
+      'Personalized care plan',
+      'Saved recommendations',
+      'Outcome tracking',
+    ],
+  },
+  consultation: {
+    price: '$199.99',
+    period: 'one-time',
+    features: [
+      'Self-guided access',
+      'One scheduled 30-min consultation',
+      'Review of care plan',
+      'Guidance on dosing, time of day',
+      'Progress check-in',
+    ],
+    note: '$19.99/month thereafter',
+    oneTime: true,
   },
   guided: {
     price: '$49.99',
-    period: '/mo',
-    features: ['Everything in Self-Guided', 'Dedicated cannabis coach', 'Monthly 1:1 check-in sessions', 'Priority support', 'Plan review & adjustments'],
+    period: '/month',
+    features: [
+      'Everything in Self-Guided',
+      'Dedicated cannabis coach',
+      'Monthly 1:1 check-in sessions',
+      'Priority support',
+      'Plan review & adjustments',
+    ],
   },
   concierge: {
     price: 'Contact us',
     period: '',
-    features: ['Everything in Guided', '1:1 expert sessions', 'Dedicated wellness advisor', 'White-glove onboarding'],
+    badge: 'Gold · Platinum · Diamond',
+    features: [
+      'Premium support',
+      'Priority coach access',
+      'White-glove experience',
+    ],
+    contactOnly: true,
   },
+};
+
+// Upgrade nudge config: which tiers show an inline upgrade prompt and to what
+const UPGRADE_NUDGES: Partial<Record<SubscriptionTier, { toTier: SubscriptionTier; label: string; priceKey: keyof typeof STRIPE_PRICE_IDS }>> = {
+  marketplace:  { toTier: 'self_guided',  label: 'Ready for your personalized care plan?',      priceKey: 'selfGuided'   },
+  self_guided:  { toTier: 'guided',       label: 'Ready for a dedicated cannabis coach?',         priceKey: 'guided'       },
+  consultation: { toTier: 'guided',       label: 'Interested in ongoing coach support?',          priceKey: 'guided'       },
 };
 
 export default async function AccountPage({ searchParams }: AccountPageProps) {
@@ -52,29 +107,11 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const adminSupabase = createSupabaseAdminClient();
 
   const [profileRes, subRes, intakeCountRes, logCountRes, planItemsRes] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('role, state, age_verified_at, subscription_tier')
-      .eq('user_id', user.id)
-      .single(),
-    supabase
-      .from('subscriptions')
-      .select('tier, status, current_period_end, stripe_customer_id')
-      .eq('user_id', user.id)
-      .single(),
-    adminSupabase
-      .from('intake_sessions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .not('completed_at', 'is', null),
-    adminSupabase
-      .from('outcome_logs')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id),
-    adminSupabase
-      .from('care_plan_items')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id),
+    supabase.from('profiles').select('role, state, age_verified_at, subscription_tier').eq('user_id', user.id).single(),
+    supabase.from('subscriptions').select('tier, status, current_period_end, stripe_customer_id').eq('user_id', user.id).single(),
+    adminSupabase.from('intake_sessions').select('id', { count: 'exact', head: true }).eq('user_id', user.id).not('completed_at', 'is', null),
+    adminSupabase.from('outcome_logs').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+    adminSupabase.from('care_plan_items').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
   ]);
 
   const params       = await searchParams;
@@ -92,11 +129,23 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     ? new Date(user.created_at).toLocaleDateString('en-US', { dateStyle: 'medium' })
     : '—';
 
-  // Tiers available for checkout — only show if price ID is configured
-  const checkoutableTiers: SubscriptionTier[] = [];
-  if (STRIPE_PRICE_IDS.marketplace) checkoutableTiers.push('marketplace');
-  if (STRIPE_PRICE_IDS.selfGuided)  checkoutableTiers.push('self_guided');
-  if (STRIPE_PRICE_IDS.guided)      checkoutableTiers.push('guided');
+  // Tiers with a Stripe price configured (can go to checkout)
+  const checkoutableTiers = new Set<SubscriptionTier>([
+    ...(STRIPE_PRICE_IDS.marketplace  ? ['marketplace']  as const : []),
+    ...(STRIPE_PRICE_IDS.selfGuided   ? ['self_guided']  as const : []),
+    ...(STRIPE_PRICE_IDS.consultation ? ['consultation'] as const : []),
+    ...(STRIPE_PRICE_IDS.guided       ? ['guided']       as const : []),
+  ]);
+
+  // Inline upgrade nudge for the current active tier
+  const nudge = isActive ? UPGRADE_NUDGES[currentTier] : undefined;
+  const nudgeConfigured = nudge && STRIPE_PRICE_IDS[nudge.priceKey];
+
+  const checkSvg = (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
+      <path d="M5 12.5l4.5 4.5L19 7"/>
+    </svg>
+  );
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -144,7 +193,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         ))}
       </div>
 
-      {/* Subscription */}
+      {/* Current plan */}
       <div className="rounded-2xl border border-border bg-card p-5 space-y-4 card-shadow">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Current plan</h2>
         <div className="flex items-center justify-between">
@@ -161,139 +210,102 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             {isActive ? 'Active' : currentTier === 'free' ? 'Free' : (subscription?.status ?? 'Inactive')}
           </span>
         </div>
-        <div className="flex items-center gap-4 flex-wrap">
-          {isActive && (
-            <form action={createPortalSession}>
-              <button type="submit" className="text-sm font-medium text-primary hover:underline">
-                Manage subscription →
-              </button>
-            </form>
-          )}
-          {/* Upgrade nudge: self_guided → guided */}
-          {isActive && currentTier === 'self_guided' && STRIPE_PRICE_IDS.guided && (
-            <form action={createCheckoutSession}>
-              <input type="hidden" name="tier" value="guided" />
-              <button type="submit" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Upgrade to Guided →
-              </button>
-            </form>
-          )}
-        </div>
+        {isActive && (
+          <form action={createPortalSession}>
+            <button type="submit" className="text-sm font-medium text-primary hover:underline">
+              Manage subscription →
+            </button>
+          </form>
+        )}
       </div>
 
-      {/* Marketplace → Self-Guided upgrade card */}
-      {isActive && currentTier === 'marketplace' && STRIPE_PRICE_IDS.selfGuided && (
+      {/* Inline upgrade nudge for active subscribers */}
+      {nudgeConfigured && nudge && (
         <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 space-y-3 card-shadow">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-foreground">Ready for your personalized care plan?</p>
+              <p className="text-sm font-semibold text-foreground">{nudge.label}</p>
               <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                Upgrade to Self-Guided ($19.99/mo) to unlock your full intake-driven care plan with dosing guidance, outcome tracking, and a personalized titration path.
+                {TIER_DETAILS[nudge.toTier].features.join(' · ')}
               </p>
             </div>
-            <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold text-primary">Self-Guided</span>
+            <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold text-primary">
+              {TIER_LABELS[nudge.toTier]}
+            </span>
           </div>
-          <ul className="space-y-1.5">
-            {TIER_DETAILS.self_guided.features.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-xs text-foreground">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
-                  <path d="M5 12.5l4.5 4.5L19 7"/>
-                </svg>
-                {f}
-              </li>
-            ))}
-          </ul>
           <form action={createCheckoutSession}>
-            <input type="hidden" name="tier" value="self_guided" />
+            <input type="hidden" name="tier" value={nudge.toTier} />
             <button type="submit"
               className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
-              Upgrade to Self-Guided — $19.99/mo
+              Upgrade to {TIER_LABELS[nudge.toTier]} — {TIER_DETAILS[nudge.toTier].price}{TIER_DETAILS[nudge.toTier].period && !TIER_DETAILS[nudge.toTier].oneTime ? TIER_DETAILS[nudge.toTier].period : ''}
             </button>
           </form>
         </div>
       )}
 
-      {/* Guided upgrade card — shown inline for active self_guided users */}
-      {isActive && currentTier === 'self_guided' && STRIPE_PRICE_IDS.guided && (
-        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 space-y-3 card-shadow">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-foreground">Ready for a coach?</p>
-              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                Upgrade to Guided ($49.99/mo) and get a dedicated Cannabis Coach who reviews your plan, tracks your progress, and holds monthly 1:1 sessions with you.
-              </p>
-            </div>
-            <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold text-primary">Guided</span>
-          </div>
-          <ul className="space-y-1.5">
-            {TIER_DETAILS.guided.features.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-xs text-foreground">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
-                  <path d="M5 12.5l4.5 4.5L19 7"/>
-                </svg>
-                {f}
-              </li>
-            ))}
-          </ul>
-          <form action={createCheckoutSession}>
-            <input type="hidden" name="tier" value="guided" />
-            <button type="submit"
-              className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
-              Upgrade to Guided — $49.99/mo
-            </button>
-          </form>
-        </div>
-      )}
-
-      {/* Tier comparison + upgrade */}
+      {/* Full tier comparison — shown to free users or inactive subscribers */}
       {!isActive && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Upgrade your plan</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Choose your plan</h2>
           <div className="space-y-3">
-            {(['marketplace', 'self_guided', 'guided', 'concierge'] as const).map((tier) => {
-              const details      = TIER_DETAILS[tier];
-              const isConfigured = checkoutableTiers.includes(tier);
-              const isCurrent    = tier === currentTier;
+            {(['marketplace', 'self_guided', 'consultation', 'guided', 'concierge'] as const).map((tier) => {
+              const details   = TIER_DETAILS[tier];
+              const canBuy    = checkoutableTiers.has(tier);
+              const isCurrent = tier === currentTier;
 
               return (
                 <div
                   key={tier}
-                  className={`rounded-2xl border p-5 space-y-3 transition-colors ${
-                    details.highlight
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border bg-card'
-                  } card-shadow`}
+                  className={`rounded-2xl border p-5 space-y-3 transition-colors card-shadow ${
+                    details.highlight ? 'border-primary bg-primary/5' : 'border-border bg-card'
+                  }`}
                 >
+                  {/* Header */}
                   <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-foreground">{TIER_LABELS[tier]}</p>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-semibold text-foreground">
+                          Tier {(['marketplace','self_guided','consultation','guided','concierge'] as const).indexOf(tier) + 2}: {TIER_LABELS[tier]}
+                        </p>
                         {details.highlight && !isCurrent && (
                           <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">Most popular</span>
+                        )}
+                        {details.badge && (
+                          <span className="rounded-full bg-amber-100 text-amber-700 px-2 py-0.5 text-[10px] font-semibold">{details.badge}</span>
                         )}
                         {isCurrent && (
                           <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">Current</span>
                         )}
                       </div>
-                      <p className="text-sm font-semibold text-primary mt-0.5">
-                        {details.price}<span className="text-xs font-normal text-muted-foreground">{details.period}</span>
-                      </p>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-lg font-bold text-primary">{details.price}</span>
+                        {details.period && (
+                          <span className="text-xs text-muted-foreground">{details.period}</span>
+                        )}
+                      </div>
+                      {details.note && (
+                        <p className="text-xs text-muted-foreground italic">{details.note}</p>
+                      )}
                     </div>
                   </div>
 
+                  {/* Features */}
                   <ul className="space-y-1.5">
                     {details.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-foreground">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mt-0.5 shrink-0" aria-hidden="true">
-                          <path d="M5 12.5l4.5 4.5L19 7"/>
-                        </svg>
+                        {checkSvg}
                         {f}
                       </li>
                     ))}
                   </ul>
 
+                  {/* CTA */}
                   {!isCurrent && (
-                    isConfigured ? (
+                    details.contactOnly ? (
+                      <p className="text-xs text-muted-foreground text-center py-1 italic">
+                        Contact us to learn about Gold, Platinum & Diamond plans
+                      </p>
+                    ) : canBuy ? (
                       <form action={createCheckoutSession}>
                         <input type="hidden" name="tier" value={tier} />
                         <button
@@ -301,26 +313,25 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                           className={`w-full rounded-full py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 ${
                             details.highlight
                               ? 'bg-primary text-primary-foreground'
-                              : 'border border-border bg-card text-foreground'
+                              : 'border border-border bg-card text-foreground hover:bg-secondary'
                           }`}
                         >
-                          Get started with {TIER_LABELS[tier]}
+                          {details.oneTime ? `Book consultation — ${details.price}` : `Get started with ${TIER_LABELS[tier]}`}
                         </button>
                       </form>
                     ) : (
-                      <p className="text-xs text-muted-foreground text-center py-1">
-                        {tier === 'concierge' ? 'Contact us to learn more' : 'Coming soon'}
-                      </p>
+                      <p className="text-xs text-muted-foreground text-center py-1">Coming soon</p>
                     )
                   )}
                 </div>
               );
             })}
           </div>
+          <p className="text-xs text-muted-foreground text-center">Cancel anytime from account settings.</p>
         </div>
       )}
 
-      {/* Settings list */}
+      {/* Account settings */}
       <div className="rounded-2xl border border-border bg-card card-shadow">
         <div className="divide-y divide-border">
           {[

@@ -8,25 +8,29 @@ import { getStripe, STRIPE_PRICE_IDS } from '@/lib/server/stripe';
 import { log } from '@/lib/observability/log';
 import { trackEvent } from '@/lib/observability/events';
 
-const TierSchema = z.enum(['self_guided', 'guided', 'concierge']);
+const TierSchema = z.enum(['marketplace', 'self_guided', 'consultation', 'guided', 'concierge']);
 
-function priceIdForTier(tier: 'self_guided' | 'guided' | 'concierge'): string {
-  if (tier === 'guided') return STRIPE_PRICE_IDS.guided;
-  if (tier === 'concierge') return STRIPE_PRICE_IDS.concierge;
-  return STRIPE_PRICE_IDS.selfGuided;
+type CheckoutableTier = 'marketplace' | 'self_guided' | 'consultation' | 'guided' | 'concierge';
+
+function priceIdForTier(tier: CheckoutableTier): string {
+  const map: Record<CheckoutableTier, string> = {
+    marketplace:  STRIPE_PRICE_IDS.marketplace,
+    self_guided:  STRIPE_PRICE_IDS.selfGuided,
+    consultation: STRIPE_PRICE_IDS.consultation,
+    guided:       STRIPE_PRICE_IDS.guided,
+    concierge:    STRIPE_PRICE_IDS.concierge,
+  };
+  return map[tier] ?? '';
 }
 
 export async function createCheckoutSession(formData: FormData): Promise<void> {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
   const tierResult = TierSchema.safeParse(formData.get('tier') ?? 'self_guided');
   const tier = tierResult.success ? tierResult.data : 'self_guided';
   const priceId = priceIdForTier(tier);
-
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
   if (!priceId) {
@@ -35,7 +39,6 @@ export async function createCheckoutSession(formData: FormData): Promise<void> {
   }
 
   const adminSupabase = createSupabaseAdminClient();
-
   const { data: existingSub } = await adminSupabase
     .from('subscriptions')
     .select('stripe_customer_id')
@@ -53,13 +56,16 @@ export async function createCheckoutSession(formData: FormData): Promise<void> {
     customerId = customer.id;
   }
 
+  // Tier 4 Consultation is a one-time payment, all others are recurring subscriptions
+  const isOneTime = tier === 'consultation';
+
   const session = await getStripe().checkout.sessions.create({
     customer: customerId,
-    mode: 'subscription',
+    mode: isOneTime ? 'payment' : 'subscription',
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${appUrl}/account?checkout=success`,
     cancel_url: `${appUrl}/account?checkout=cancelled`,
-    metadata: { user_id: user.id },
+    metadata: { user_id: user.id, tier },
     allow_promotion_codes: true,
   });
 
@@ -74,9 +80,7 @@ export async function createCheckoutSession(formData: FormData): Promise<void> {
 
 export async function createPortalSession(): Promise<void> {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';

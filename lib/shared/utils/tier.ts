@@ -4,14 +4,16 @@ export const TIER_ORDER: Record<SubscriptionTier, number> = {
   free: 0,
   marketplace: 1,
   self_guided: 2,
-  guided: 3,
-  concierge: 4,
+  consultation: 3,
+  guided: 4,
+  concierge: 5,
 };
 
 export const TIER_LABELS: Record<SubscriptionTier, string> = {
   free: 'Free',
   marketplace: 'Marketplace Access',
   self_guided: 'Self-Guided',
+  consultation: 'Consultation',
   guided: 'Guided',
   concierge: 'Concierge',
 };
