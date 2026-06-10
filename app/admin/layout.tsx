@@ -30,6 +30,7 @@ const NAV_GROUPS = [
     items: [
       { href: '/admin/products', label: 'Products & COAs' },
       { href: '/admin/education', label: 'Education Articles' },
+      { href: '/admin/media', label: 'Media Hub' },
       { href: '/admin/content', label: 'Rules & Content' },
     ],
   },

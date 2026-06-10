@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "engine_min": "0.2.0",
   "rules": [
     {
@@ -305,6 +305,100 @@
       "weight": 1.0,
       "education_ref": "edu.cannabinoid.cbd",
       "copy_ref": "copy.rec.medication.interaction",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.cannabinoid.cbc.pain.inflammation",
+      "category": "cannabinoid",
+      "subject": "cbc",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["pain", "inflammation", "neuropathy"] },
+          { "answer": "severity.primary", "gte": 4 }
+        ]
+      },
+      "weight": 0.62,
+      "education_ref": "edu.cannabinoid.cbc",
+      "copy_ref": "copy.rec.cbc.pain",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.cbc.mood",
+      "category": "cannabinoid",
+      "subject": "cbc",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["mood", "anxiety"] }
+        ]
+      },
+      "weight": 0.58,
+      "education_ref": "edu.cannabinoid.cbc",
+      "copy_ref": "copy.rec.cbc.mood",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.thcv.focus.appetite",
+      "category": "cannabinoid",
+      "subject": "thcv",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["focus", "nausea"] },
+          { "answer": "timing.preference", "in": ["daytime"] }
+        ]
+      },
+      "weight": 0.60,
+      "education_ref": "edu.cannabinoid.thcv",
+      "copy_ref": "copy.rec.thcv.focus",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.cannabinoid.thcv.parkinsons",
+      "category": "cannabinoid",
+      "subject": "thcv",
+      "when": {
+        "all": [
+          { "answer": "condition.primary", "includes_any": ["parkinsons"] }
+        ]
+      },
+      "weight": 0.64,
+      "education_ref": "edu.cannabinoid.thcv",
+      "copy_ref": "copy.rec.thcv.parkinsons",
+      "deprecated": false,
+      "ml_boost_eligible": true
+    },
+    {
+      "id": "rec.format.preroll.experienced",
+      "category": "format",
+      "subject": "pre-roll",
+      "when": {
+        "all": [
+          { "answer": "format.preference", "includes_any": ["pre-roll", "flower"] },
+          { "answer": "experience.level", "in": ["moderate", "experienced"] }
+        ]
+      },
+      "weight": 0.60,
+      "education_ref": "edu.format.flower",
+      "copy_ref": "copy.rec.preroll.experienced",
+      "deprecated": false,
+      "ml_boost_eligible": false
+    },
+    {
+      "id": "rec.format.drink.daytime",
+      "category": "format",
+      "subject": "drink",
+      "when": {
+        "all": [
+          { "answer": "format.preference", "includes_any": ["drink"] },
+          { "answer": "timing.preference", "in": ["daytime", "evening"] }
+        ]
+      },
+      "weight": 0.58,
+      "education_ref": "edu.format.edible",
+      "copy_ref": "copy.rec.drink.daytime",
       "deprecated": false,
       "ml_boost_eligible": false
     }

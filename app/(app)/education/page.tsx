@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/server/supabase-server';
-import { createSupabaseAdminClient } from '@/lib/server/supabase-admin';
 import { loadArticleList, type ArticleCategory, type ArticleMeta } from '@/lib/server/education/load-articles';
 import { DISCLAIMERS } from '@/lib/shared/copy/disclaimers';
 import { getUserTier } from '@/lib/server/subscriptions';

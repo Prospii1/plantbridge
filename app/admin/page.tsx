@@ -45,6 +45,7 @@ export default async function AdminDashboardPage() {
           { href: '/admin/partners', label: 'Partners' },
           { href: '/admin/brand-partners', label: 'Brand Partners' },
           { href: '/admin/products', label: 'Products & COAs' },
+          { href: '/admin/media', label: 'Media Hub' },
           { href: '/admin/analytics', label: 'Analytics' },
         ].map(({ href, label }) => (
           <Link

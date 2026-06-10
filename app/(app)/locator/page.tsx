@@ -82,20 +82,25 @@ export default async function LocatorPage({ searchParams }: PageProps) {
         <div className="rounded-2xl border border-border bg-secondary p-6 space-y-4">
           <p className="text-sm font-semibold text-foreground">No dispensary partners in your area yet</p>
           <p className="text-sm text-muted-foreground">
-            We&apos;re actively adding partners across the US. In the meantime, you can search for products on your own using the guidance from your care plan.
+            We&apos;re actively adding dispensary partners across the US. In the meantime, you can order CBD &amp; hemp products online from our vetted partners — no dispensary required.
           </p>
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground text-xs uppercase tracking-wide">What to look for:</p>
+            <p className="font-medium text-foreground text-xs uppercase tracking-wide">What to look for in any product:</p>
             <ul className="space-y-1 pl-4 list-disc">
-              <li>Ask for a Certificate of Analysis (COA) for any product</li>
+              <li>Ask for a Certificate of Analysis (COA) — always</li>
               <li>Look for CBD/CBG percentages matching your care plan guidance</li>
               <li>Check the terpene profile on the COA</li>
               <li>Start with tinctures or capsules for consistent dosing</li>
             </ul>
           </div>
-          <Link href="/care-plan" className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
-            View my care plan →
-          </Link>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Link href="/resources#cbd--hemp-product-partners" className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity text-center justify-center">
+              Browse CBD &amp; hemp partners →
+            </Link>
+            <Link href="/care-plan" className="inline-flex rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground hover:bg-secondary transition-colors text-center justify-center">
+              View my care plan
+            </Link>
+          </div>
         </div>
       </div>
     );

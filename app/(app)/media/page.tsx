@@ -1,15 +1,20 @@
 import type { Metadata } from 'next';
+import fs from 'fs';
+import path from 'path';
 import { DISCLAIMERS } from '@/lib/shared/copy/disclaimers';
 
 export const metadata: Metadata = { title: 'Media Hub — PlantBridge' };
 
 interface MediaItem {
+  id: string;
   title: string;
   description: string;
   url: string;
   type: 'podcast' | 'event' | 'press' | 'video';
   source: string;
   date?: string;
+  featured?: boolean;
+  createdAt: string;
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -26,133 +31,21 @@ const TAG_ICONS: Record<string, string> = {
   video:   'M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.361a1 1 0 0 1-1.447.894L15 14M3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z',
 };
 
-const PODCASTS: MediaItem[] = [
-  {
-    title: 'The Cannabis Enigma',
-    source: 'Hadassah Medical Center',
-    description: 'Scientific deep-dives into cannabis research from one of the world\'s leading medical institutions. Topics include endocannabinoid system biology, clinical trials, and therapeutic applications.',
-    url: 'https://www.thecannabisenigma.com',
-    type: 'podcast',
-  },
-  {
-    title: 'Cannabis Nursing Solutions',
-    source: 'Eloise Theisen',
-    description: 'Focused on clinical cannabis education for healthcare providers. Covers dosing principles, patient consultation frameworks, and emerging research in an accessible format.',
-    url: 'https://cannabisnursingsolutions.com',
-    type: 'podcast',
-  },
-  {
-    title: 'Shaping Fire',
-    source: 'Ariel Rosenfeld',
-    description: 'Conversations with scientists, growers, and industry leaders exploring the science and culture of cannabis. Strong focus on terpenes, cultivar effects, and the entourage effect.',
-    url: 'https://www.shapingfire.com',
-    type: 'podcast',
-  },
-  {
-    title: 'CannaInsider',
-    source: 'Jimmy Young',
-    description: 'Business-focused cannabis podcast with interviews from founders, investors, and wellness entrepreneurs. Good for understanding the industry landscape alongside the science.',
-    url: 'https://www.cannainsider.com/podcast',
-    type: 'podcast',
-  },
-];
+function loadItems(): MediaItem[] {
+  const filePath = path.join(process.cwd(), 'content', 'media', 'items.json');
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8')) as MediaItem[];
+  } catch {
+    return [];
+  }
+}
 
-const EVENTS: MediaItem[] = [
-  {
-    title: 'MJBizCon',
-    source: 'MJBizDaily',
-    description: 'The world\'s largest cannabis industry event — featuring scientific sessions, policy panels, and wellness tracks alongside the business expo. Held annually in Las Vegas.',
-    url: 'https://mjbizconference.com',
-    type: 'event',
-    date: 'November 2025',
-  },
-  {
-    title: 'Cannabis Science Conference',
-    source: 'Emerald Scientific',
-    description: 'Science-first conference bringing together analytical chemists, clinicians, and researchers to advance the scientific understanding of cannabis and cannabinoids.',
-    url: 'https://www.cannabisscienceconference.com',
-    type: 'event',
-    date: 'Annual',
-  },
-  {
-    title: 'CannMed',
-    source: 'CannMed',
-    description: 'Medical cannabis education conference connecting physicians, scientists, and patients. Curriculum covers endocannabinology, clinical applications, and patient outcomes research.',
-    url: 'https://www.cannmedevents.com',
-    type: 'event',
-    date: 'Annual',
-  },
-  {
-    title: 'WeedCon',
-    source: 'WeedCon',
-    description: 'Consumer-facing cannabis wellness event with education sessions, product showcases, and expert Q&As. Focus on wellness, self-care, and responsible use.',
-    url: 'https://www.weedcon.com',
-    type: 'event',
-    date: 'Annual',
-  },
+const SECTION_META = [
+  { key: 'podcast' as const, label: 'Podcasts',              description: 'Educational audio series on cannabis science and wellness.' },
+  { key: 'event'   as const, label: 'Events',                description: 'Conferences, expos, and gatherings for the cannabis education community.' },
+  { key: 'press'   as const, label: 'Press & Publications',  description: 'Journals, news, and industry media worth following.' },
+  { key: 'video'   as const, label: 'Videos & Lectures',     description: 'Talks and educational videos from researchers and clinicians.' },
 ];
-
-const PRESS: MediaItem[] = [
-  {
-    title: 'Cannabis & Cannabinoid Research Journal',
-    source: 'Mary Ann Liebert',
-    description: 'Peer-reviewed open-access journal dedicated to cannabis science. All articles freely available — ideal for staying current with clinical and preclinical research.',
-    url: 'https://www.liebertpub.com/loi/can',
-    type: 'press',
-  },
-  {
-    title: 'Leafly News',
-    source: 'Leafly',
-    description: 'Consumer-facing cannabis news covering new research findings, state policy changes, product launches, and wellness trends. High-volume, good for staying current.',
-    url: 'https://www.leafly.com/news',
-    type: 'press',
-  },
-  {
-    title: 'MJBizDaily',
-    source: 'MJBizDaily',
-    description: 'Industry news and data for cannabis businesses. Covers market data, regulatory changes, investment trends, and company news across the US and Canada.',
-    url: 'https://mjbizdaily.com',
-    type: 'press',
-  },
-  {
-    title: 'Marijuana Moment',
-    source: 'Marijuana Moment',
-    description: 'Policy-focused cannabis news. Best source for tracking federal and state legislation, regulatory agency actions, and political developments affecting the industry.',
-    url: 'https://www.marijuanamoment.net',
-    type: 'press',
-  },
-];
-
-const VIDEOS: MediaItem[] = [
-  {
-    title: 'The Endocannabinoid System — Dr. Ethan Russo',
-    source: 'YouTube',
-    description: 'Comprehensive lecture by one of the world\'s leading cannabinoid researchers explaining how the endocannabinoid system works and its role in homeostasis and wellness.',
-    url: 'https://www.youtube.com/results?search_query=endocannabinoid+system+ethan+russo',
-    type: 'video',
-  },
-  {
-    title: 'Terpenes & the Entourage Effect',
-    source: 'Project CBD',
-    description: 'Educational video series exploring how terpenes interact with cannabinoids to produce different wellness effects — the science behind synergistic plant compounds.',
-    url: 'https://www.projectcbd.org/science/cannabis-pharmacology/terpenes-entourage',
-    type: 'video',
-  },
-  {
-    title: 'Cannabis & Sleep — Scientific Overview',
-    source: 'Sleep Foundation',
-    description: 'Evidence-based review of research on cannabis, CBD, and sleep — covering what the science says about cannabinoids and sleep architecture.',
-    url: 'https://www.sleepfoundation.org/sleep-aids/cannabis-and-sleep',
-    type: 'video',
-  },
-];
-
-const SECTIONS = [
-  { key: 'podcast', label: 'Podcasts', description: 'Educational audio series on cannabis science and wellness.', items: PODCASTS },
-  { key: 'event',   label: 'Events',   description: 'Conferences, expos, and gatherings for the cannabis education community.', items: EVENTS },
-  { key: 'press',   label: 'Press & Publications', description: 'Journals, news, and industry media worth following.', items: PRESS },
-  { key: 'video',   label: 'Videos & Lectures', description: 'Talks and educational videos from researchers and clinicians.', items: VIDEOS },
-] as const;
 
 function MediaCard({ item }: { item: MediaItem }) {
   return (
@@ -177,6 +70,11 @@ function MediaCard({ item }: { item: MediaItem }) {
               {item.date}
             </span>
           )}
+          {item.featured && (
+            <span className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[10px] font-medium">
+              Featured
+            </span>
+          )}
         </div>
         <p className="text-xs font-medium text-primary">{item.source}</p>
         <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
@@ -189,6 +87,10 @@ function MediaCard({ item }: { item: MediaItem }) {
 }
 
 export default function MediaPage() {
+  const allItems = loadItems();
+  // Featured items first within each section
+  const sorted = [...allItems].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+
   return (
     <div className="mx-auto max-w-3xl space-y-10">
       <div className="space-y-1 pt-2">
@@ -198,19 +100,23 @@ export default function MediaPage() {
         </p>
       </div>
 
-      {SECTIONS.map((section) => (
-        <section key={section.key} className="space-y-4">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">{section.label}</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">{section.description}</p>
-          </div>
-          <div className="space-y-3">
-            {section.items.map((item) => (
-              <MediaCard key={item.title} item={item} />
-            ))}
-          </div>
-        </section>
-      ))}
+      {SECTION_META.map(({ key, label, description }) => {
+        const items = sorted.filter((i) => i.type === key);
+        if (items.length === 0) return null;
+        return (
+          <section key={key} className="space-y-4">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">{label}</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+            </div>
+            <div className="space-y-3">
+              {items.map((item) => (
+                <MediaCard key={item.id} item={item} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
 
       <p className="text-xs text-muted-foreground border-t border-border pt-4 pb-2">
         {DISCLAIMERS.standard} External links are provided for educational purposes only.

@@ -1,0 +1,156 @@
+[
+  {
+    "id": "media-podcast-1",
+    "title": "The Cannabis Enigma",
+    "source": "Hadassah Medical Center",
+    "description": "Scientific deep-dives into cannabis research from one of the world's leading medical institutions. Topics include endocannabinoid system biology, clinical trials, and therapeutic applications.",
+    "url": "https://www.thecannabisenigma.com",
+    "type": "podcast",
+    "featured": true,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-podcast-2",
+    "title": "Cannabis Nursing Solutions",
+    "source": "Eloise Theisen",
+    "description": "Focused on clinical cannabis education for healthcare providers. Covers dosing principles, patient consultation frameworks, and emerging research in an accessible format.",
+    "url": "https://cannabisnursingsolutions.com",
+    "type": "podcast",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-podcast-3",
+    "title": "Shaping Fire",
+    "source": "Ariel Rosenfeld",
+    "description": "Conversations with scientists, growers, and industry leaders exploring the science and culture of cannabis. Strong focus on terpenes, cultivar effects, and the entourage effect.",
+    "url": "https://www.shapingfire.com",
+    "type": "podcast",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-podcast-4",
+    "title": "CannaInsider",
+    "source": "Martin Doane",
+    "description": "Long-running industry podcast covering business, science, and policy. Useful for understanding the broader cannabis ecosystem — dispensaries, extraction, lab testing, and regulations.",
+    "url": "https://www.cannainsider.com/podcast",
+    "type": "podcast",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-event-1",
+    "title": "MJBizCon",
+    "source": "MJBiz",
+    "description": "The cannabis industry's largest trade show. Covers business strategy, regulatory updates, and product innovation. Held annually in Las Vegas.",
+    "url": "https://mjbizconference.com",
+    "type": "event",
+    "date": "Nov 2025 · Las Vegas, NV",
+    "featured": true,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-event-2",
+    "title": "Cannabis Science Conference",
+    "source": "Cannabis Science Foundation",
+    "description": "Science-first conference bringing together researchers, clinicians, and industry professionals. Strong focus on clinical studies, pharmacology, and patient outcomes.",
+    "url": "https://cannabisscienceconference.com",
+    "type": "event",
+    "date": "Aug 2025 · Portland, OR",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-event-3",
+    "title": "CannMed",
+    "source": "CannMed",
+    "description": "Medical-focused cannabis conference for physicians, researchers, and patient advocates. Emphasis on clinical evidence, patient cases, and regulatory perspectives.",
+    "url": "https://cannmedevents.com",
+    "type": "event",
+    "date": "Oct 2025 · Pasadena, CA",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-event-4",
+    "title": "WeedCon",
+    "source": "WeedCon",
+    "description": "Consumer-focused cannabis expo with product showcases, education panels, and community programming. Great for staying current on product trends and patient advocacy.",
+    "url": "https://weedcon.com",
+    "type": "event",
+    "date": "Dec 2025 · Los Angeles, CA",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-press-1",
+    "title": "Cannabis and Cannabinoid Research",
+    "source": "Mary Ann Liebert Publishers",
+    "description": "Peer-reviewed journal covering clinical and basic science research. Free abstracts — the gold standard for evidence-based cannabis wellness discussions.",
+    "url": "https://home.liebertpub.com/publications/cannabis-and-cannabinoid-research/642",
+    "type": "press",
+    "featured": true,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-press-2",
+    "title": "Leafly News",
+    "source": "Leafly",
+    "description": "Consumer-accessible cannabis news covering legalization, product reviews, research summaries, and wellness topics. Useful for staying current without needing a science background.",
+    "url": "https://www.leafly.com/news",
+    "type": "press",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-press-3",
+    "title": "MJBizDaily",
+    "source": "MJBiz",
+    "description": "Business-focused cannabis industry news — market data, regulatory updates, licensing, and investment trends. Essential reading for understanding the industry landscape.",
+    "url": "https://mjbizdaily.com",
+    "type": "press",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-press-4",
+    "title": "Marijuana Moment",
+    "source": "Marijuana Moment",
+    "description": "Policy and politics news covering federal and state cannabis legislation. Best source for regulatory changes that affect patients and the healthcare ecosystem.",
+    "url": "https://www.marijuanamoment.net",
+    "type": "press",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-video-1",
+    "title": "The Endocannabinoid System Explained",
+    "source": "Project CBD",
+    "description": "Comprehensive lecture covering how the endocannabinoid system works, receptor types (CB1, CB2), and how cannabinoids modulate pain, mood, and sleep pathways.",
+    "url": "https://www.projectcbd.org/science/endocannabinoid-system",
+    "type": "video",
+    "featured": true,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-video-2",
+    "title": "Terpenes & the Entourage Effect",
+    "source": "Cannabis Science Foundation",
+    "description": "Scientific overview of how terpenes interact with cannabinoids to modify and enhance therapeutic effects. Covers linalool, myrcene, caryophyllene, and limonene in detail.",
+    "url": "https://cannabissciencefoundation.org",
+    "type": "video",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "media-video-3",
+    "title": "Cannabis & Sleep: What the Research Shows",
+    "source": "Sleep Foundation",
+    "description": "Evidence-based overview of cannabis use for sleep disorders. Covers CBN, CBD, and THC's effects on REM sleep, sleep latency, and long-term sleep quality.",
+    "url": "https://www.sleepfoundation.org/sleep-aids/cannabis-and-sleep",
+    "type": "video",
+    "featured": false,
+    "createdAt": "2026-06-01T00:00:00.000Z"
+  }
+]

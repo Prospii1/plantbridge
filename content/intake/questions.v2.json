@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "questions": [
     {
       "id": "condition.primary",
@@ -44,11 +44,11 @@
       "required": false,
       "show_if": { "answer": "condition.primary", "includes_any": ["anxiety", "ptsd"] },
       "options": [
-        { "value": "general",      "label": "General day-to-day worry" },
-        { "value": "social",       "label": "Social anxiety" },
-        { "value": "panic",        "label": "Panic attacks" },
-        { "value": "racing.mind",  "label": "Racing thoughts at night" },
-        { "value": "hypervigilance","label": "Hypervigilance / hyperarousal" }
+        { "value": "general",        "label": "General day-to-day worry" },
+        { "value": "social",         "label": "Social anxiety" },
+        { "value": "panic",          "label": "Panic attacks" },
+        { "value": "racing.mind",    "label": "Racing thoughts at night" },
+        { "value": "hypervigilance", "label": "Hypervigilance / hyperarousal" }
       ]
     },
     {
@@ -62,6 +62,22 @@
         { "value": "staying.asleep",  "label": "Waking up during the night" },
         { "value": "early.waking",    "label": "Waking too early and can't get back" },
         { "value": "unrestorative",   "label": "Sleep feels unrestorative" }
+      ]
+    },
+    {
+      "id": "condition.followup.parkinsons",
+      "type": "multi_choice",
+      "text": "Which Parkinson's symptoms are most affecting you?",
+      "subtext": "Select all that apply — this helps tailor your recommendations.",
+      "required": false,
+      "show_if": { "answer": "condition.primary", "includes_any": ["parkinsons"] },
+      "options": [
+        { "value": "tremors",       "label": "Tremors / shaking" },
+        { "value": "rigidity",      "label": "Muscle stiffness / rigidity" },
+        { "value": "pain.pk",       "label": "Pain associated with Parkinson's" },
+        { "value": "sleep.pk",      "label": "Sleep disturbances" },
+        { "value": "mood.pk",       "label": "Anxiety or low mood" },
+        { "value": "nausea.pk",     "label": "Nausea (medication side effect)" }
       ]
     },
     {
@@ -82,13 +98,13 @@
       "subtext": "Optional — select any secondary issues you'd also like addressed.",
       "required": false,
       "options": [
-        { "value": "fatigue",   "label": "Fatigue / low energy" },
-        { "value": "appetite",  "label": "Appetite or digestive issues" },
-        { "value": "mood",      "label": "Low mood" },
-        { "value": "focus",     "label": "Focus / brain fog" },
-        { "value": "nausea",    "label": "Nausea" },
-        { "value": "spasticity","label": "Muscle spasms / spasticity" },
-        { "value": "nothing",   "label": "Nothing else" }
+        { "value": "fatigue",    "label": "Fatigue / low energy" },
+        { "value": "appetite",   "label": "Appetite or digestive issues" },
+        { "value": "mood",       "label": "Low mood" },
+        { "value": "focus",      "label": "Focus / brain fog" },
+        { "value": "nausea",     "label": "Nausea" },
+        { "value": "spasticity", "label": "Muscle spasms / spasticity" },
+        { "value": "nothing",    "label": "Nothing else" }
       ]
     },
     {
@@ -124,10 +140,10 @@
       "subtext": "This helps us recommend products that fit your daily rhythm.",
       "required": false,
       "options": [
-        { "value": "daytime",  "label": "Daytime — stay functional and clear-headed" },
-        { "value": "evening",  "label": "Evening — wind down after the day" },
-        { "value": "nighttime","label": "Nighttime — sleep support" },
-        { "value": "all.day",  "label": "All day — consistent relief" }
+        { "value": "daytime",   "label": "Daytime — stay functional and clear-headed" },
+        { "value": "evening",   "label": "Evening — wind down after the day" },
+        { "value": "nighttime", "label": "Nighttime — sleep support" },
+        { "value": "all.day",   "label": "All day — consistent relief" }
       ]
     },
     {
@@ -137,13 +153,15 @@
       "subtext": "Select all that appeal to you, or skip if you have no preference.",
       "required": false,
       "options": [
-        { "value": "tincture",    "label": "Tinctures / oils (under the tongue)" },
-        { "value": "capsule",     "label": "Capsules / softgels" },
-        { "value": "edible",      "label": "Edibles (gummies, chocolates)" },
-        { "value": "vaporizer",   "label": "Vaporizer / inhale" },
-        { "value": "topical",     "label": "Topicals (creams, balms) — localised relief" },
-        { "value": "flower",      "label": "Flower / pre-rolls" },
-        { "value": "no.preference","label": "No preference" }
+        { "value": "tincture",      "label": "Tinctures / oils (under the tongue)" },
+        { "value": "capsule",       "label": "Capsules / softgels" },
+        { "value": "edible",        "label": "Edibles (gummies, chocolates)" },
+        { "value": "drink",         "label": "Drinks / beverages (infused drinks)" },
+        { "value": "vaporizer",     "label": "Vaporizer / inhale" },
+        { "value": "flower",        "label": "Flower (loose, bowl, bong)" },
+        { "value": "pre-roll",      "label": "Pre-rolls / joints" },
+        { "value": "topical",       "label": "Topicals (creams, balms) — localised relief" },
+        { "value": "no.preference", "label": "No preference" }
       ]
     },
     {

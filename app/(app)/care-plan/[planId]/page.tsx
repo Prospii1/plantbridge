@@ -382,6 +382,38 @@ export default async function CarePlanPage({ params, searchParams }: Props) {
           </div>
         )}
 
+        {/* ── Coach CTA ── */}
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-primary" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">Interested in working with a cannabis coach?</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                A PlantBridge coach can review this plan with you, adjust recommendations, and guide you through your wellness journey with monthly check-ins.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link
+              href="/book"
+              className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              Yes, book a session →
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Not right now
+            </Link>
+          </div>
+        </div>
+
         {/* ── Disclaimers ── */}
         <div className="rounded-xl border border-border/50 bg-muted/20 p-4 space-y-1 text-xs text-muted-foreground">
           <p>{DISCLAIMERS.standard}</p>
